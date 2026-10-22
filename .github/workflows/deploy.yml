@@ -1,0 +1,55 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 允许在 Actions 页面手动触发
+
+# 权限必须严格按此设置，否则部署会报错
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 并发控制：同一时间只允许一个 Pages 部署任务
+concurrency:
+  group: "pages"
+  cancel-in-progress: false # 建议设为 false，避免中途取消导致部署状态异常
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # 自动缓存 npm 依赖，大幅缩短安装时间
+
+      - name: Install dependencies
+        run: npm ci # 比 npm install 更快、更可复现
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' # 请根据你的构建工具修改（Vite 是 dist，Next 是 out，Hugo 是 public）
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
