@@ -3,18 +3,16 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: # 允许在 Actions 页面手动触发
+  workflow_dispatch:
 
-# 权限必须严格按此设置，否则部署会报错
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 并发控制：同一时间只允许一个 Pages 部署任务
 concurrency:
   group: "pages"
-  cancel-in-progress: false # 建议设为 false，避免中途取消导致部署状态异常
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,25 +21,117 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      # ========== 1. 自动探测包管理器 & 项目目录 ==========
+      - name: Detect package manager and project dir
+        id: detect
+        run: |
+          # ---- 探测项目根目录（含 lock 文件或 package.json 的目录）----
+          if [ -f "package.json" ]; then
+            ROOT="."
+          elif [ -f "frontend/package.json" ]; then
+            ROOT="frontend"
+          elif [ -f "app/package.json" ]; then
+            ROOT="app"
+          elif [ -f "web/package.json" ]; then
+            ROOT="web"
+          else
+            # 兜底：找第一个含 package.json 的目录（排除 node_modules）
+            ROOT=$(find . -maxdepth 3 -name package.json -not -path "*/node_modules/*" | head -n1 | xargs -r dirname)
+            [ -z "$ROOT" ] && ROOT="."
+          fi
+          echo "root=$ROOT" >> $GITHUB_OUTPUT
+
+          # ---- 探测包管理器 ----
+          if [ -f "$ROOT/pnpm-lock.yaml" ]; then
+            PM="pnpm"; LOCK="$ROOT/pnpm-lock.yaml"
+          elif [ -f "$ROOT/yarn.lock" ]; then
+            PM="yarn"; LOCK="$ROOT/yarn.lock"
+          elif [ -f "$ROOT/package-lock.json" ]; then
+            PM="npm"; LOCK="$ROOT/package-lock.json"
+          elif [ -f "$ROOT/package.json" ]; then
+            PM="npm"; LOCK=""   # 有 package.json 但无锁文件
+          else
+            PM="none"; LOCK=""
+          fi
+          echo "pm=$PM" >> $GITHUB_OUTPUT
+          echo "lock=$LOCK" >> $GITHUB_OUTPUT
+          echo "Detected: root=$ROOT, pm=$PM, lock=$LOCK"
+
+      # ========== 2. 安装 pnpm / yarn（如需）==========
+      - name: Setup pnpm
+        if: steps.detect.outputs.pm == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # ========== 3. 设置 Node（缓存容错）==========
+      # 只有当锁文件存在时才启用缓存，否则跳过（避免 "lock file not found" 报错）
+      - name: Setup Node (with cache)
+        if: steps.detect.outputs.lock != ''
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm' # 自动缓存 npm 依赖，大幅缩短安装时间
+          cache: ${{ steps.detect.outputs.pm }}
+          cache-dependency-path: ${{ steps.detect.outputs.lock }}
 
+      - name: Setup Node (no cache)
+        if: steps.detect.outputs.lock == ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ========== 4. 安装依赖（按包管理器分派）==========
       - name: Install dependencies
-        run: npm ci # 比 npm install 更快、更可复现
+        working-directory: ${{ steps.detect.outputs.root }}
+        run: |
+          case "${{ steps.detect.outputs.pm }}" in
+            pnpm) pnpm install --frozen-lockfile || pnpm install ;;
+            yarn) yarn install --frozen-lockfile || yarn install ;;
+            npm)
+              if [ -f package-lock.json ]; then npm ci; else npm install; fi
+              ;;
+            *)
+              echo "No package.json found, skip install";;
+          esac
 
+      # ========== 5. 构建（自动识别输出目录）==========
       - name: Build
-        run: npm run build
+        id: build
+        working-directory: ${{ steps.detect.outputs.root }}
+        run: |
+          # 如果没有 package.json，跳过构建（纯静态站）
+          if [ ! -f package.json ]; then
+            echo "No build step, using root as output"
+            echo "output=${{ steps.detect.outputs.root }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
+          # 选择可用的构建命令
+          if node -e "const s=require('./package.json').scripts||{}; process.exit(s.build?0:1)"; then
+            npm run build
+          elif node -e "const s=require('./package.json').scripts||{}; process.exit(s.docs:build?0:1)"; then
+            npm run docs:build
+          else
+            echo "No build script found"; exit 1
+          fi
+
+          # 自动识别输出目录
+          for d in dist out build public _site docs/.vitepress/dist .vitepress/dist; do
+            if [ -d "$d" ]; then
+              echo "output=${{ steps.detect.outputs.root }}/$d" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+          echo "output=${{ steps.detect.outputs.root }}" >> $GITHUB_OUTPUT
+
+      # ========== 6. 部署到 Pages ==========
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist' # 请根据你的构建工具修改（Vite 是 dist，Next 是 out，Hugo 是 public）
+          path: ${{ steps.build.outputs.output }}
 
   deploy:
     needs: build
