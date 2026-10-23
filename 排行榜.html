@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>课堂表现排行榜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   课堂表现排行榜 · Design tokens
+   ============================================================ */
+:root{
+  --bg:#f6f7f9;
+  --surface:#ffffff;
+  --surface-2:#f1f3f7;
+  --surface-3:#e9ecf2;
+  --text:#14171d;
+  --text-2:#5c6472;
+  --text-3:#98a0b0;
+  --line:#e4e7ee;
+  --line-2:#d6dae3;
+  --accent:#3b82f6;
+  --accent-ink:#ffffff;
+  --accent-soft:#eaf1fe;
+  --up:#10b981;
+  --up-soft:#e7f7f1;
+  --down:#f43f5e;
+  --down-soft:#fdeef1;
+  --gold:#d99a2b;
+  --r-lg:18px;
+  --r-md:12px;
+  --r-sm:9px;
+  --sh-1:0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.05);
+  --sh-2:0 4px 16px -4px rgba(16,24,40,.10), 0 2px 6px rgba(16,24,40,.04);
+  --sh-3:0 18px 48px -12px rgba(16,24,40,.22);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font:'Outfit','Noto Sans SC','PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#101319;
+  --surface:#181c24;
+  --surface-2:#1f242e;
+  --surface-3:#272d39;
+  --text:#e9ecf3;
+  --text-2:#a3abb9;
+  --text-3:#6f7887;
+  --line:#262c37;
+  --line-2:#333b48;
+  --accent:#5b9dff;
+  --accent-ink:#08101c;
+  --accent-soft:#182740;
+  --up:#2dd4a7;
+  --up-soft:#12291f;
+  --down:#fb6b82;
+  --down-soft:#2c161c;
+  --gold:#e0a93f;
+  --sh-1:0 1px 2px rgba(0,0,0,.30);
+  --sh-2:0 4px 16px -4px rgba(0,0,0,.45);
+  --sh-3:0 18px 48px -12px rgba(0,0,0,.60);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--font);font-size:14px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"tnum" 1;
+}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+button{font-family:inherit;font-size:inherit;color:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+svg{display:block}
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+/* scrollbar */
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:20px;border:3px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:var(--text-3);background-clip:content-box;border:3px solid transparent}
+*::-webkit-scrollbar-track{background:transparent}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.wrap{max-width:1360px;margin:0 auto;padding:0 24px 120px}
+.topbar{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb, var(--bg) 96%, transparent);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{max-width:1360px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-mark{
+  width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--accent-ink);
+  display:grid;place-items:center;flex:none;box-shadow:0 4px 12px -3px color-mix(in srgb,var(--accent) 55%, transparent);
+}
+.brand-mark svg{width:20px;height:20px}
+.brand h1{font-size:16px;line-height:1.2;white-space:nowrap}
+.brand p{margin:1px 0 0;font-size:11.5px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+.select{
+  appearance:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:8px 30px 8px 11px;font-size:13px;font-weight:500;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2398a0b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;transition:border-color .18s,box-shadow .18s;
+}
+.select:hover{border-color:var(--line-2)}
+.select:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+.btn{
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  padding:8px 13px;border-radius:var(--r-sm);border:1px solid var(--line);
+  background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;
+  transition:transform .14s var(--ease),box-shadow .18s,background .18s,border-color .18s;white-space:nowrap;
+}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{border-color:var(--line-2);box-shadow:var(--sh-1);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 3px 10px -3px color-mix(in srgb,var(--accent) 60%, transparent)}
+.btn-primary:hover{background:color-mix(in srgb,var(--accent) 88%, #000);border-color:color-mix(in srgb,var(--accent) 88%, #000)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-2)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text);box-shadow:none}
+.btn-danger{color:var(--down);border-color:color-mix(in srgb,var(--down) 28%, var(--line))}
+.btn-danger:hover{background:var(--down-soft)}
+.btn-sm{padding:5px 9px;font-size:12px;border-radius:7px}
+.btn-icon{padding:8px;width:34px;height:34px}
+.btn-icon svg{width:17px;height:17px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:22px;padding-top:22px;align-items:start}
+.col-side{position:sticky;top:82px;display:flex;flex-direction:column;gap:16px}
+
+/* ============================================================
+   Toolbar
+   ============================================================ */
+.toolbar{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--sh-1);
+}
+.tb-group{display:flex;align-items:center;gap:6px}
+.tb-label{font-size:11.5px;color:var(--text-3);font-weight:500;letter-spacing:.02em;margin-right:2px}
+.seg{display:flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px}
+.seg button{
+  border:0;background:transparent;padding:5px 11px;border-radius:7px;font-size:12.5px;font-weight:500;
+  color:var(--text-2);cursor:pointer;transition:all .16s var(--ease);display:flex;align-items:center;gap:5px;
+}
+.seg button svg{width:14px;height:14px}
+.seg button:hover{color:var(--text)}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:var(--sh-1)}
+.point-chip{
+  min-width:34px;height:30px;padding:0 9px;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);font-weight:600;font-size:13px;cursor:pointer;color:var(--text-2);
+  transition:all .16s var(--ease);
+}
+.point-chip:hover{border-color:var(--accent);color:var(--accent)}
+.point-chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.search{
+  display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid transparent;
+  border-radius:9px;padding:0 10px;height:32px;min-width:150px;flex:1;max-width:230px;transition:.18s;
+}
+.search:focus-within{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search svg{width:15px;height:15px;color:var(--text-3);flex:none}
+.search input{border:0;background:transparent;outline:none;width:100%;font-size:13px}
+.search input::placeholder{color:var(--text-3)}
+.tb-spacer{flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  font-size:11.5px;font-weight:500;background:var(--surface-2);color:var(--text-2);white-space:nowrap;
+}
+.chip-accent{background:var(--accent-soft);color:var(--accent)}
+.chip-gold{background:color-mix(in srgb,var(--gold) 16%, transparent);color:var(--gold)}
+.chip-up{background:var(--up-soft);color:var(--up)}
+.chip-down{background:var(--down-soft);color:var(--down)}
+
+/* ============================================================
+   Board
+   ============================================================ */
+.board{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.board-row{
+  position:relative;display:grid;align-items:center;gap:12px;
+  --cols:34px 40px minmax(0,1fr) 92px 96px 84px;
+  grid-template-columns:var(--cols);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:11px 14px;box-shadow:var(--sh-1);
+  transition:transform .55s var(--ease),box-shadow .2s,border-color .2s;
+}
+.board-row:hover{box-shadow:var(--sh-2);border-color:var(--line-2)}
+.board.multi .board-row{--cols:26px 34px 40px minmax(0,1fr) 92px 96px 84px}
+.board:not(.multi) .board-row .row-check{display:none}
+
+.row-check{display:flex;align-items:center;justify-content:center}
+.chk{width:17px;height:17px;border-radius:5px;border:1.6px solid var(--line-2);display:grid;place-items:center;cursor:pointer;transition:.15s;flex:none}
+.chk:hover{border-color:var(--accent)}
+.chk.on{background:var(--accent);border-color:var(--accent)}
+.chk svg{width:11px;height:11px;color:#fff;opacity:0;transform:scale(.6);transition:.15s}
+.chk.on svg{opacity:1;transform:scale(1)}
+
+.rank{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12.5px;font-weight:700;color:var(--text-3);background:var(--surface-2)}
+.rank.r1{background:var(--accent);color:var(--accent-ink);box-shadow:0 2px 8px -2px color-mix(in srgb,var(--accent) 70%, transparent)}
+.rank.r2{background:var(--surface-3);color:var(--text-2)}
+.rank.r3{background:var(--surface-3);color:var(--text-2)}
+
+.avatar{
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;
+  font-size:16px;font-weight:600;color:#fff;background:var(--c,var(--accent));
+  letter-spacing:.02em;box-shadow:0 2px 8px -3px color-mix(in srgb,var(--c,var(--accent)) 75%, transparent);
+}
+.row-main{min-width:0}
+.row-title{display:flex;align-items:center;gap:7px;min-width:0}
+.row-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-title .star{width:14px;height:14px;color:var(--gold);flex:none;fill:color-mix(in srgb,var(--gold) 30%, transparent)}
+.row-note{font-size:11.5px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.bar{height:5px;border-radius:4px;background:var(--surface-2);margin-top:8px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .65s var(--ease),background .3s;min-width:0}
+.bar-fill.neg{background:var(--down)}
+.bar-fill.pos{background:var(--accent)}
+.bar-fill.top{background:color-mix(in srgb,var(--accent) 75%, #000)}
+
+.spark{height:30px;display:grid;place-items:center}
+.spark-svg{width:84px;height:26px;overflow:visible}
+.spark-line{fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.spark-area{fill:var(--accent);opacity:.09}
+
+.score-cell{display:flex;align-items:baseline;justify-content:flex-end;gap:3px;position:relative}
+.score-num{font-size:25px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.score-num.neg{color:var(--down)}
+.score-num.zero{color:var(--text-3)}
+.score-unit{font-size:11px;color:var(--text-3);font-weight:500}
+.score-cell.pop .score-num{animation:pop .5s var(--ease)}
+@keyframes pop{0%{transform:scale(1)}32%{transform:scale(1.3)}100%{transform:scale(1)}}
+.score-cell.up .score-num{color:var(--up)}
+.score-cell.down .score-num{color:var(--down)}
+.float-delta{
+  position:absolute;right:0;top:-2px;font-weight:700;font-size:14px;pointer-events:none;
+  animation:floatUp 1.15s var(--ease) forwards;z-index:5;
+}
+.float-delta.up{color:var(--up)}
+.float-delta.down{color:var(--down)}
+@keyframes floatUp{0%{opacity:0;transform:translateY(6px) scale(.85)}18%{opacity:1;transform:translateY(0) scale(1.1)}100%{opacity:0;transform:translateY(-30px) scale(1)}}
+.row-flash{animation:rowFlash 1s ease-out}
+@keyframes rowFlash{0%{background:var(--accent-soft)}100%{background:var(--surface)}}
+
+.row-acts{display:flex;gap:6px;justify-content:flex-end}
+.mini{
+  width:31px;height:31px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
+  display:grid;place-items:center;cursor:pointer;transition:all .15s var(--ease);
+}
+.mini svg{width:15px;height:15px}
+.mini.up:hover{background:var(--up-soft);border-color:color-mix(in srgb,var(--up) 40%, transparent);color:var(--up)}
+.mini.down:hover{background:var(--down-soft);border-color:color-mix(in srgb,var(--down) 40%, transparent);color:var(--down)}
+.mini:active{transform:scale(.9)}
+
+/* batch bar */
+.batchbar{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:70;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:14px;box-shadow:var(--sh-3);
+  padding:9px 10px 9px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:calc(100vw - 32px);
+  animation:slideUp .28s var(--ease);
+}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+.batchbar .count{font-size:13px;font-weight:600;white-space:nowrap}
+.batchbar .count b{color:var(--accent)}
+.batchbar .divider{width:1px;height:20px;background:var(--line)}
+
+/* empty state */
+.empty{
+  text-align:center;padding:64px 24px;background:var(--surface);border:1px dashed var(--line-2);border-radius:var(--r-lg);
+}
+.empty svg{width:46px;height:46px;color:var(--text-3);margin:0 auto 16px;opacity:.65}
+.empty h2{font-size:17px;margin-bottom:7px}
+.empty p{color:var(--text-2);font-size:13px;margin:0 auto 20px;max-width:380px}
+.empty-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+
+/* ============================================================
+   Cards (side)
+   ============================================================ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1);overflow:hidden}
+.card-head{display:flex;align-items:center;gap:8px;padding:14px 16px 0}
+.card-head h3{font-size:13.5px;font-weight:600}
+.card-head svg{width:15px;height:15px;color:var(--text-3)}
+.card-head .right{margin-left:auto;font-size:11.5px;color:var(--text-3)}
+.card-body{padding:12px 16px 16px}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.stat{background:var(--surface);padding:11px 13px}
+.stat dt{font-size:11px;color:var(--text-3);margin:0 0 3px}
+.stat dd{margin:0;font-size:20px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat dd small{font-size:11px;font-weight:500;color:var(--text-3);margin-left:2px}
+.stat .pos{color:var(--up)}
+.stat .neg{color:var(--down)}
+
+.timeline{list-style:none;margin:0;padding:0;position:relative;max-height:262px;overflow-y:auto}
+.timeline li{position:relative;padding:0 0 13px 20px;display:flex;align-items:baseline;gap:8px}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:4px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--line-2)}
+.timeline li.up::before{background:var(--up)}
+.timeline li.down::before{background:var(--down)}
+.timeline .tl-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+.timeline .tl-delta{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.timeline .tl-delta.up{color:var(--up)}
+.timeline .tl-delta.down{color:var(--down)}
+.timeline .tl-time{margin-left:auto;font-size:11px;color:var(--text-3);white-space:nowrap}
+.timeline-empty{color:var(--text-3);font-size:12.5px;text-align:center;padding:18px 0}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;margin:0;font-size:12.5px}
+.kv dt{color:var(--text-3)}
+.kv dd{margin:0;text-align:right;font-weight:500;word-break:break-all}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+.dot.ok{background:var(--up)}
+.dot.bad{background:var(--down)}
+.dot.warn{background:var(--gold)}
+
+.timer{text-align:center;padding:14px 16px 16px}
+.timer-val{font-size:38px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.timer-val.warn{color:var(--down)}
+.timer-controls{display:flex;gap:6px;justify-content:center;margin-top:12px}
+.timer-presets{display:flex;gap:4px;justify-content:center;margin-top:9px}
+.timer-presets button{border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:3px 8px;font-size:11.5px;color:var(--text-2);cursor:pointer}
+.timer-presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ============================================================
+   Table view
+   ============================================================ */
+.table-wrap{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:auto;box-shadow:var(--sh-1)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+thead th{
+  text-align:left;font-size:11.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;
+  padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);position:sticky;top:0;white-space:nowrap;
+}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr.sel{background:var(--accent-soft)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.cell-input{width:72px;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);text-align:right;font-variant-numeric:tabular-nums;outline:none}
+.cell-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.rowbtns{display:flex;gap:5px;justify-content:flex-end}
+
+/* ============================================================
+   Charts view
+   ============================================================ */
+.charts{margin-top:16px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px 18px;box-shadow:var(--sh-1)}
+.chart-card h3{font-size:13.5px;display:flex;align-items:center;gap:7px}
+.chart-card h3 svg{width:15px;height:15px;color:var(--text-3)}
+.chart-card .sub{font-size:11.5px;color:var(--text-3);margin:3px 0 14px}
+.bench{display:grid;grid-template-columns:88px 1fr 54px;gap:11px;align-items:center;padding:5px 0}
+.bench-label{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bench-track{height:16px;background:var(--surface-2);border-radius:6px;overflow:hidden;position:relative}
+.bench-fill{height:100%;border-radius:6px;background:var(--accent);transition:width .7s var(--ease)}
+.bench-fill.neg{background:var(--down)}
+.bench-val{font-size:12.5px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.bench-val.neg{color:var(--down)}
+.histo{display:flex;align-items:flex-end;gap:8px;height:132px;padding-top:6px}
+.histo-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.histo-bar{width:100%;background:var(--accent);border-radius:5px 5px 3px 3px;min-height:2px;transition:height .6s var(--ease);opacity:.9}
+.histo-col:hover .histo-bar{opacity:1}
+.histo-count{font-size:11.5px;font-weight:700}
+.histo-label{font-size:10.5px;color:var(--text-3);text-align:center;line-height:1.25}
+.line-chart{width:100%;height:150px}
+.lc-grid{stroke:var(--line);stroke-width:1}
+.lc-area{fill:var(--accent);opacity:.08}
+.lc-line{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lc-dot{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.lc-lbl{font-size:10px;fill:var(--text-3)}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.overlay{
+  position:fixed;inset:0;background:rgba(12,16,24,.48);
+  z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;
+  animation:fadeIn .18s ease-out;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-3);width:100%;max-width:560px;
+  max-height:calc(100dvh - 48px);display:flex;flex-direction:column;overflow:hidden;
+  animation:modalIn .26s var(--ease);
+}
+.modal.wide{max-width:760px}
+@keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-head h2{font-size:15.5px;white-space:nowrap}
+.modal-head > svg{width:19px;height:19px;color:var(--accent);flex:none}
+.modal-head .x{margin-left:auto}
+.modal-body{padding:18px;overflow-y:auto;flex:1}
+.modal-foot{padding:13px 18px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;background:var(--surface-2)}
+.field{margin-bottom:15px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.field .hint{font-size:11.5px;color:var(--text-3);font-weight:400;margin-top:5px;line-height:1.5}
+.inp{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);
+  outline:none;transition:.16s;font-size:13.5px;
+}
+.inp:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea.inp{resize:vertical;min-height:150px;line-height:1.7;font-size:13.5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+.drop{
+  border:1.5px dashed var(--line-2);border-radius:var(--r-md);padding:26px 18px;text-align:center;
+  cursor:pointer;transition:.18s;background:var(--surface-2);
+}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:26px;height:26px;color:var(--text-3);margin:0 auto 9px}
+.drop p{margin:0;font-size:13px;font-weight:500}
+.drop span{font-size:11.5px;color:var(--text-3)}
+
+.preview{
+  margin-top:13px;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+}
+.preview-head{padding:8px 12px;background:var(--surface-2);font-size:12px;font-weight:600;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.preview-head .tag{margin-left:auto;font-size:11px;color:var(--text-3);font-weight:500}
+.preview-list{display:flex;flex-wrap:wrap;gap:5px;padding:11px 12px;max-height:120px;overflow-y:auto}
+.preview-item{background:var(--surface-2);border-radius:6px;padding:3px 8px;font-size:12px}
+
+.cls-list{display:flex;flex-direction:column;gap:8px}
+.cls-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-md);transition:.16s}
+.cls-item:hover{border-color:var(--line-2);background:var(--surface-2)}
+.cls-item.on{border-color:var(--accent);background:var(--accent-soft)}
+.cls-icon{width:34px;height:34px;border-radius:10px;background:var(--surface-3);display:grid;place-items:center;flex:none;color:var(--text-2)}
+.cls-item.on .cls-icon{background:var(--accent);color:var(--accent-ink)}
+.cls-icon svg{width:17px;height:17px}
+.cls-meta{min-width:0;flex:1}
+.cls-meta strong{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cls-meta span{font-size:11.5px;color:var(--text-3)}
+.cls-acts{display:flex;gap:4px;flex:none}
+
+.opt-row{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:.15s;margin-bottom:7px}
+.opt-row:hover{border-color:var(--line-2);background:var(--surface-2)}
+.opt-row input{accent-color:var(--accent);width:15px;height:15px;flex:none}
+.opt-row .t{font-size:13px;font-weight:500}
+.opt-row .d{font-size:11.5px;color:var(--text-3);margin-left:auto;text-align:right}
+
+/* toast */
+.toasts{position:fixed;right:18px;bottom:18px;z-index:200;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{
+  background:var(--surface);border:1px solid var(--line-2);border-left:3px solid var(--accent);
+  border-radius:10px;box-shadow:var(--sh-3);padding:10px 14px;font-size:13px;font-weight:500;
+  animation:toastIn .26s var(--ease);max-width:320px;
+}
+.toast.ok{border-left-color:var(--up)}
+.toast.err{border-left-color:var(--down)}
+.toast.warn{border-left-color:var(--gold)}
+@keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.toast.out{animation:toastOut .22s ease-in forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(16px)}}
+
+/* confetti */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:150}
+
+/* picker */
+.picker-name{font-size:44px;font-weight:700;text-align:center;padding:34px 16px 26px;letter-spacing:.04em;min-height:110px;display:grid;place-items:center}
+.picker-name.spin{animation:spin .07s linear infinite}
+@keyframes spin{0%{transform:translateY(-5px) scale(1.02)}50%{transform:translateY(5px) scale(.99)}100%{transform:translateY(-5px) scale(1.02)}}
+.picker-sub{text-align:center;color:var(--text-2);font-size:13px;padding-bottom:16px}
+
+.hidden{display:none !important}
+.muted{color:var(--text-3)}
+.mono{font-variant-numeric:tabular-nums}
+.nowrap{white-space:nowrap}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width:1080px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .col-side{position:static;flex-direction:row;flex-wrap:wrap}
+  .col-side .card{flex:1;min-width:280px}
+}
+@media (max-width:760px){
+  .wrap{padding:0 14px 130px}
+  .topbar-inner{padding:11px 14px;flex-wrap:wrap;gap:10px}
+  .brand p{display:none}
+  .topbar-actions{width:100%;margin-left:0;overflow-x:auto;padding-bottom:2px}
+  .toolbar{padding:10px}
+  .board-row{--cols:26px 36px minmax(0,1fr) 62px 72px;gap:8px;padding:10px}
+  .board.multi .board-row{--cols:26px 26px 36px minmax(0,1fr) 62px 72px}
+  .board .avatar{width:36px;height:36px;border-radius:10px;font-size:15px}
+  .board .rank{width:22px;height:22px;border-radius:7px;font-size:11.5px}
+  .score-num{font-size:20px}
+  .board .chip{padding:2px 7px;font-size:11px}
+  .board .spark,.board.multi .board-row .spark{display:none}
+  .row-note{display:none}
+  .batchbar{bottom:12px;left:12px;right:12px;transform:none;justify-content:center}
+  @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .picker-name{font-size:32px}
+}
+
+/* print */
+@media print{
+  .topbar,.toolbar,.col-side,.row-acts,.batchbar,.toasts{display:none !important}
+  body{background:#fff}
+  .wrap{padding:0}
+  .layout{grid-template-columns:1fr}
+  .board-row,.table-wrap{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      </div>
+      <div>
+        <h1>课堂表现排行榜</h1>
+        <p id="brandSub">还没有班级，先导入一份名单</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <select class="select" id="classSelect" title="切换班级"></select>
+      <button class="btn btn-primary" id="btnRoster">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+        录入名单
+      </button>
+      <button class="btn" id="btnClasses">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m6.08 10.37-3.5 1.59a1 1 0 0 0 0 1.83l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.6"/></svg>
+        班级管理
+      </button>
+      <button class="btn btn-icon" id="btnRandom" title="随机点名">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>
+      </button>
+      <button class="btn btn-icon" id="btnTheme" title="切换主题">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </button>
+      <button class="btn btn-icon" id="btnSettings" title="设置与备份">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="layout">
+    <section>
+      <div class="toolbar">
+        <div class="tb-group">
+          <span class="tb-label">分值</span>
+          <div class="tb-group" id="pointChips"></div>
+        </div>
+        <div class="tb-group">
+          <div class="seg" id="viewSeg">
+            <button data-view="board" class="on">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>榜单</button>
+            <button data-view="table">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>表格</button>
+            <button data-view="charts">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-3"/></svg>图表</button>
+          </div>
+        </div>
+        <div class="tb-group">
+          <label class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" id="searchInput" placeholder="搜索学生 / 小组" />
+          </label>
+        </div>
+        <div class="tb-group">
+          <select class="select" id="groupFilter"><option value="all">全部小组</option></select>
+          <select class="select" id="sortSelect">
+            <option value="score">按分数排名</option>
+            <option value="name">按姓名</option>
+            <option value="join">按加入顺序</option>
+            <option value="group">按小组</option>
+          </select>
+        </div>
+        <button class="btn btn-sm" id="btnStarFilter" title="只看课堂之星">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.123 0 0 0 1.597-1.16z"/></svg>
+          <span>课堂之星</span>
+        </button>
+        <button class="btn btn-sm" id="btnMulti">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+          多选
+        </button>
+        <div class="tb-spacer"></div>
+        <button class="btn btn-sm btn-ghost" id="btnUndo" title="撤销 (Ctrl+Z)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        </button>
+        <button class="btn btn-sm btn-ghost" id="btnRedo" title="重做 (Ctrl+Shift+Z)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        </button>
+        <button class="btn btn-sm" id="btnAddStudent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          添加学生
+        </button>
+      </div>
+
+      <div class="board" id="board"></div>
+      <div class="table-wrap hidden" id="tableView"></div>
+      <div class="charts hidden" id="chartsView"></div>
+    </section>
+
+    <aside class="col-side">
+      <div class="card">
+        <div class="card-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-3"/></svg>
+          <h3>班级概览</h3>
+        </div>
+        <div class="card-body">
+          <dl class="stat-grid">
+            <div class="stat"><dt>学生人数</dt><dd id="stCount">0</dd></div>
+            <div class="stat"><dt>平均分</dt><dd id="stAvg">0</dd></div>
+            <div class="stat"><dt>最高分</dt><dd id="stMax">0</dd></div>
+            <div class="stat"><dt>课堂之星</dt><dd id="stStar">0</dd></div>
+            <div class="stat"><dt>今日加分</dt><dd id="stUp" class="pos">0</dd></div>
+            <div class="stat"><dt>今日减分</dt><dd id="stDown" class="neg">0</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <h3>课堂计时</h3>
+          <span class="right" id="timerPresets"></span>
+        </div>
+        <div class="timer">
+          <div class="timer-val" id="timerVal">45:00</div>
+          <div class="timer-controls">
+            <button class="btn btn-sm btn-primary" id="timerStart">开始</button>
+            <button class="btn btn-sm" id="timerReset">重置</button>
+          </div>
+          <div class="timer-presets" id="timerPresets2"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+          <h3>最近动态</h3>
+          <span class="right" id="tlCount">0 条</span>
+        </div>
+        <div class="card-body">
+          <ol class="timeline" id="timeline"></ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+          <h3>数据存储</h3>
+        </div>
+        <div class="card-body">
+          <dl class="kv" id="storageKv"></dl>
+          <div style="display:flex;gap:6px;margin-top:13px;flex-wrap:wrap">
+            <button class="btn btn-sm" id="btnExportJson">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+              导出备份
+            </button>
+            <button class="btn btn-sm" id="btnExportCsv">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+              导出成绩表
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   0. 常量与工具
+   ============================================================ */
+const LS_KEY   = 'csb_state_v1';
+const CK_ACTIVE= 'csb_active_v1';
+const CK_CLS   = 'csb_cls_';
+const CK_STU   = 'csb_stu_';
+const CK_BULK  = 'csb_bulk_';
+const MAX_EV   = 60;   // 每名学生保留的事件数
+const MAX_SNAP = 60;   // 撤销栈深度
+const COOKIE_SOFT_LIMIT = 150;
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.prototype.slice.call(r.querySelectorAll(s));
+const uid = ()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc  = s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad2 = n=>String(n).padStart(2,'0');
+const fmtClock = t=>{const d=new Date(t);return pad2(d.getHours())+':'+pad2(d.getMinutes());};
+const fmtDate  = t=>{const d=new Date(t);return (d.getMonth()+1)+'月'+d.getDate()+'日';};
+const dayKey   = t=>{const d=new Date(t||Date.now());return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();};
+const sum = a=>a.reduce((x,y)=>x+y,0);
+
+const ICON = {
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+  minus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.123 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.123 0 0 0 1.597-1.16z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497Z"/><path d="m15 5 4 4"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
+  rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  layers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m6.08 10.37-3.5 1.59a1 1 0 0 0 0 1.83l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.6"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>',
+  bar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-3"/></svg>',
+  trend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>',
+  shuffle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+};
+
+const AVATAR_COLORS = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#ef4444','#14b8a6','#f97316','#6366f1'];
+function colorFor(name){
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+  return AVATAR_COLORS[h%AVATAR_COLORS.length];
+}
+function initial(name){
+  const s=String(name||'?').trim();
+  if(!s) return '?';
+  if(/[\u4e00-\u9fa5]/.test(s)) return s.slice(0,1);   /* 中文取姓（首字） */
+  return s.slice(0,2).toUpperCase();
+}
+
+/* ============================================================
+   1. 状态
+   ============================================================ */
+function defaultState(){
+  return {
+    v:1,
+    activeClassId:null,
+    classes:[],
+    settings:{ theme:'light', sound:true, confetti:true, quick:1, presets:[1,2,3,5], defaultInitial:0, showSpark:true },
+    ui:{ view:'board', sort:'score', q:'', group:'all', starred:false, selected:[], multi:false,
+         timer:{ dur:45*60, left:45*60, running:false } }
+  };
+}
+let state = defaultState();
+let lsOk = true, cookieOk = true;
+let snaps = [], redoStack = [];
+let cookieTimer = null;
+
+function currentClass(){
+  if(!state.classes.length) return null;
+  let c = state.classes.find(x=>x.id===state.activeClassId);
+  if(!c){ c = state.classes[0]; state.activeClassId = c.id; }
+  return c;
+}
+function classById(id){ return state.classes.find(x=>x.id===id) || null; }
+
+/* ============================================================
+   2. Cookie 读写
+   ============================================================ */
+function cookieSupported(){
+  try{
+    document.cookie = '__csb_t=1; path=/';
+    const ok = document.cookie.indexOf('__csb_t=')>=0;
+    document.cookie = '__csb_t=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    return ok;
+  }catch(e){ return false; }
+}
+function setCookie(name,value,days){
+  try{
+    const d=new Date(); d.setTime(d.getTime()+days*864e5);
+    document.cookie = encodeURIComponent(name)+'='+encodeURIComponent(value)+'; expires='+d.toUTCString()+'; path=/; SameSite=Lax';
+  }catch(e){}
+}
+function delCookie(name){
+  try{ document.cookie = encodeURIComponent(name)+'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax'; }catch(e){}
+}
+function readCookies(){
+  const out={};
+  if(!document.cookie) return out;
+  document.cookie.split(';').forEach(part=>{
+    const i=part.indexOf('='); if(i<0) return;
+    const k=decodeURIComponent(part.slice(0,i).trim());
+    const v=decodeURIComponent(part.slice(i+1).trim());
+    if(k) out[k]=v;
+  });
+  return out;
+}
+
+/* 把每个学生的分值写进「独立的一个 cookie」，同时整体写一份本地存储 */
+function syncCookies(){
+  if(!cookieOk) return;
+  const keep = Object.create(null);
+  try{
+    setCookie(CK_ACTIVE, state.activeClassId||'');
+    state.classes.forEach(c=>{
+      const ck = CK_CLS + c.id;
+      setCookie(ck, JSON.stringify({n:c.name,t:c.createdAt,c:c.students.length}));
+      keep[ck]=1;
+
+      c.students.forEach(s=>{
+        const k = CK_STU + c.id + '_' + s.id;
+        setCookie(k, JSON.stringify({
+          n:s.name, s:s.score, b:s.initial, g:s.group||'', u:s.updatedAt||0, st:s.starred?1:0, o:s.note||''
+        }));
+        keep[k]=1;
+      });
+
+      /* 班级级整体快照：作为 cookie 数量超限时的兜底 */
+      const bulk = JSON.stringify({n:c.name,t:c.createdAt,
+        st:c.students.map(s=>[s.id,s.name,s.score,s.initial,s.group||'',s.updatedAt||0,s.starred?1:0])});
+      if(bulk.length < 2800){ const bk=CK_BULK+c.id; setCookie(bk,bulk); keep[bk]=1; }
+      else delCookie(CK_BULK+c.id);
+    });
+    /* 清理已删除班级/学生的残留 cookie */
+    Object.keys(readCookies()).forEach(k=>{
+      if((k.indexOf(CK_STU)===0 || k.indexOf(CK_CLS)===0 || k.indexOf(CK_BULK)===0) && !keep[k]) delCookie(k);
+    });
+  }catch(e){ cookieOk=false; }
+}
+function scheduleCookieSync(){ if(cookieTimer) clearTimeout(cookieTimer); cookieTimer=setTimeout(syncCookies,220); }
+
+/* 从 cookie 恢复 / 合并（应对 localStorage 被清空） */
+function mergeFromCookies(){
+  const ck = readCookies();
+  let changed = false;
+  const recovered = Object.create(null);
+
+  Object.keys(ck).forEach(k=>{
+    if(k.indexOf(CK_CLS)!==0) return;
+    const cid = k.slice(CK_CLS.length);
+    if(!cid) return;
+    if(!state.classes.find(c=>c.id===cid)){
+      let meta={}; try{ meta=JSON.parse(ck[k]); }catch(e){}
+      state.classes.push({ id:cid, name:meta.n||'恢复的班级', note:'', createdAt:meta.t||Date.now(), students:[] });
+      recovered[cid]=1; changed=true;
+    }
+  });
+
+  Object.keys(ck).forEach(k=>{
+    if(k.indexOf(CK_STU)!==0) return;
+    const rest = k.slice(CK_STU.length);
+    const sep = rest.indexOf('_');
+    if(sep<0) return;
+    const cid = rest.slice(0,sep), sid = rest.slice(sep+1);
+    const cls = classById(cid); if(!cls) return;
+    let d; try{ d=JSON.parse(ck[k]); }catch(e){ return; }
+    let st = cls.students.find(s=>s.id===sid);
+    if(!st){
+      st = { id:sid, name:d.n||'未知', score:0, initial:d.b||0, group:d.g||'', note:d.o||'',
+             starred:!!d.st, ev:[], updatedAt:0 };
+      cls.students.push(st); changed=true;
+    }
+    const cu = d.u||0, lu = st.updatedAt||0;
+    if(cu > lu){
+      st.score = (typeof d.s==='number')?d.s:st.score;
+      st.initial = (typeof d.b==='number')?d.b:st.initial;
+      st.group = d.g||''; st.name = d.n||st.name; st.starred=!!d.st;
+      st.updatedAt = cu; changed=true;
+    }
+  });
+
+  /* 班级整体快照：恢复顺序 + 补齐漏掉的学生 */
+  Object.keys(ck).forEach(k=>{
+    if(k.indexOf(CK_BULK)!==0) return;
+    const cid = k.slice(CK_BULK.length);
+    const cls = classById(cid); if(!cls) return;
+    let d; try{ d=JSON.parse(ck[k]); }catch(e){ return; }
+    const list = d.st||[];
+    const order=[], map=Object.create(null);
+    list.forEach(row=>{ const s=cls.students.find(x=>x.id===row[0]); if(s){ order.push(s); map[s.id]=1; } });
+    const extra = cls.students.filter(s=>!map[s.id]);
+    if(order.length){
+      const before = cls.students.map(s=>s.id).join(',');
+      const after  = order.concat(extra).map(s=>s.id).join(',');
+      if(before!==after){ cls.students = order.concat(extra); changed=true; }
+    }
+  });
+
+  if(!state.activeClassId && state.classes.length){ state.activeClassId=state.classes[0].id; changed=true; }
+  const act = ck[CK_ACTIVE];
+  if(act && classById(act) && act!==state.activeClassId){ state.activeClassId=act; changed=true; }
+  return { changed:changed, recovered:recovered };
+}
+
+/* ============================================================
+   3. 持久化
+   ============================================================ */
+function save(){
+  state.savedAt = Date.now();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); lsOk=true; }
+  catch(e){ lsOk=false; }
+  scheduleCookieSync();
+  renderStorageCard();
+}
+/* pushSnap 记录「操作前」的状态，因此撤销时直接回到栈顶快照 */
+function pushSnap(){
+  snaps.push(JSON.stringify(state));
+  if(snaps.length>MAX_SNAP) snaps.shift();
+  redoStack.length=0;
+}
+function undo(){
+  if(!snaps.length){ toast('没有可撤销的操作','warn'); return; }
+  redoStack.push(JSON.stringify(state));
+  state=JSON.parse(snaps.pop());
+  save(); render(); toast('已撤销');
+}
+function redo(){
+  if(!redoStack.length){ toast('没有可重做的操作','warn'); return; }
+  snaps.push(JSON.stringify(state));
+  state=JSON.parse(redoStack.pop());
+  save(); render(); toast('已重做');
+}
+
+/* ============================================================
+   4. 提示条
+   ============================================================ */
+function toast(msg,kind){
+  const box=$('#toasts'); const el=document.createElement('div');
+  el.className='toast'+(kind?' '+kind:''); el.textContent=msg;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),240); }, 2400);
+}
+
+/* ============================================================
+   5. 音效 / 彩带
+   ============================================================ */
+let actx=null;
+function beep(kind){
+  if(!state.settings.sound) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.connect(g); g.connect(actx.destination);
+    const t=actx.currentTime;
+    if(kind==='up'){ o.type='sine'; o.frequency.setValueAtTime(660,t); o.frequency.exponentialRampToValueAtTime(990,t+.09); }
+    else { o.type='triangle'; o.frequency.setValueAtTime(320,t); o.frequency.exponentialRampToValueAtTime(180,t+.11); }
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(.12,t+.015);
+    g.gain.exponentialRampToValueAtTime(.0001,t+.2);
+    o.start(t); o.stop(t+.22);
+  }catch(e){}
+}
+function confetti(){
+  if(!state.settings.confetti) return;
+  const cv=$('#confetti'); const dpr=Math.min(window.devicePixelRatio||1,2);
+  const W=window.innerWidth, H=window.innerHeight;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const colors=['#3b82f6','#10b981','#f59e0b','#f43f5e','#8b5cf6','#06b6d4'];
+  const ps=[];
+  for(let i=0;i<110;i++) ps.push({
+    x:W/2+(Math.random()-.5)*260, y:-20-Math.random()*120,
+    vx:(Math.random()-.5)*5.5, vy:2+Math.random()*3.6,
+    w:5+Math.random()*6, h:8+Math.random()*9,
+    rot:Math.random()*Math.PI, vr:(Math.random()-.5)*.3,
+    c:colors[(Math.random()*colors.length)|0]
+  });
+  let t=0;
+  (function frame(){
+    t++; ctx.clearRect(0,0,W,H);
+    for(const p of ps){
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.055; p.rot+=p.vr; p.vx*=0.995;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,1-t/170);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    }
+    if(t<180) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,W,H);
+  })();
+}
+
+/* ============================================================
+   6. 数据操作
+   ============================================================ */
+function newStudent(name, opts){
+  opts = opts||{};
+  return {
+    id: uid(), name:String(name).trim(),
+    score: (typeof opts.score==='number')?opts.score:(state.settings.defaultInitial||0),
+    initial:(typeof opts.score==='number')?opts.score:(state.settings.defaultInitial||0),
+    group: opts.group||'', note: opts.note||'',
+    starred:false, ev:[], updatedAt:0, joined:Date.now()
+  };
+}
+function addStudentsToClass(cls, rows, mode){
+  /* mode: 'append' | 'replace' */
+  pushSnap();
+  if(mode==='replace') cls.students = [];
+  const seen = Object.create(null);
+  cls.students.forEach(s=>{ seen[s.name]=1; });
+  let added=0, skipped=0;
+  rows.forEach(r=>{
+    const nm = String(r.name||'').trim();
+    if(!nm) return;
+    if(seen[nm]){ skipped++; return; }
+    seen[nm]=1;
+    cls.students.push(newStudent(nm,{score:r.score,group:r.group}));
+    added++;
+  });
+  save(); render();
+  return {added:added, skipped:skipped};
+}
+function applyScore(ids, delta, reason){
+  const cls=currentClass(); if(!cls||!ids.length||!delta) return;
+  pushSnap();
+  const t=Date.now();
+  const targets = cls.students.filter(s=>ids.indexOf(s.id)>=0);
+  const beforeTop = topId(cls);
+  targets.forEach(s=>{
+    s.score = (s.score||0) + delta;
+    s.updatedAt = t;
+    s.ev.push({t:t, d:delta, r:reason||''});
+    if(s.ev.length>MAX_EV) s.ev.splice(0, s.ev.length-MAX_EV);
+  });
+  const afterTop = topId(cls);
+  save();
+  render();
+  beep(delta>0?'up':'down');
+  const ids2 = targets.map(s=>s.id);
+  flashRows(ids2, delta);
+  if(afterTop && beforeTop!==afterTop && state.settings.confetti){
+    const st=cls.students.find(s=>s.id===afterTop);
+    if(st) setTimeout(function(){ confetti(); toast('🏆 '+st.name+' 登顶！'); },260);
+  }
+  if(ids2.length>1) toast(ids2.length+' 名学生 '+fmtDelta(delta), delta>0?'ok':'err');
+}
+function fmtDelta(d){ return (d>0?'+':'')+d+' 分'; }
+function topId(cls){
+  let best=null;
+  cls.students.forEach(s=>{ if(!best || s.score>best.score) best=s; });
+  return best?best.id:null;
+}
+function flashRows(ids, delta){
+  ids.forEach(id=>{
+    const row = document.querySelector('.board-row[data-id="'+id+'"]');
+    if(!row) return;
+    const cell = row.querySelector('.score-cell');
+    if(cell){
+      cell.classList.remove('pop','up','down');
+      void cell.offsetWidth;
+      cell.classList.add('pop');
+      cell.classList.add(delta>0?'up':'down');
+      const fd=document.createElement('div');
+      fd.className='float-delta '+(delta>0?'up':'down');
+      fd.textContent=fmtDelta(delta);
+      cell.appendChild(fd);
+      setTimeout(()=>fd.remove(),1200);
+    }
+    row.classList.remove('row-flash'); void row.offsetWidth; row.classList.add('row-flash');
+  });
+}
+function setScoreTo(id, value){
+  const cls=currentClass(); if(!cls) return;
+  const st=cls.students.find(s=>s.id===id); if(!st) return;
+  const delta = Math.round(value) - (st.score||0);
+  if(delta===0) return;
+  applyScore([id], delta, '手动设定');
+}
+function resetStudent(id){
+  const cls=currentClass(); const st=cls.students.find(s=>s.id===id); if(!st) return;
+  applyScore([id], (st.initial||0)-(st.score||0), '重置');
+}
+function removeStudents(ids){
+  const cls=currentClass(); if(!cls) return;
+  pushSnap();
+  cls.students = cls.students.filter(s=>ids.indexOf(s.id)<0);
+  state.ui.selected = state.ui.selected.filter(i=>ids.indexOf(i)<0);
+  save(); render(); toast('已删除 '+ids.length+' 名学生');
+}
+function toggleStar(id){
+  const cls=currentClass(); const st=cls.students.find(s=>s.id===id); if(!st) return;
+  st.starred=!st.starred; st.updatedAt=Date.now();
+  save(); render();
+  if(st.starred) toast('已标记 '+st.name+' 为课堂之星');
+}
+function moveStudents(ids, targetClassId){
+  const src=currentClass(); const dst=classById(targetClassId);
+  if(!src||!dst||src.id===dst.id) return;
+  pushSnap();
+  const moving = src.students.filter(s=>ids.indexOf(s.id)>=0);
+  src.students = src.students.filter(s=>ids.indexOf(s.id)<0);
+  const seen=Object.create(null); dst.students.forEach(s=>seen[s.name]=1);
+  moving.forEach(s=>{ if(!seen[s.name]){ seen[s.name]=1; dst.students.push(s); } });
+  state.ui.selected = state.ui.selected.filter(i=>ids.indexOf(i)<0);
+  save(); render(); toast('已移动 '+moving.length+' 名学生到「'+dst.name+'」');
+}
+function assignGroup(ids, group){
+  const cls=currentClass(); if(!cls) return;
+  pushSnap();
+  cls.students.forEach(s=>{ if(ids.indexOf(s.id)>=0){ s.group=group; s.updatedAt=Date.now(); } });
+  save(); render(); toast('已分配到「'+(group||'未分组')+'」');
+}
+
+/* ============================================================
+   7. 名单解析
+   ============================================================ */
+function parseRosterText(text){
+  const rows=[];
+  String(text||'').split(/\r?\n/).forEach(function(raw){
+    const line=String(raw).trim();
+    if(!line || line.charAt(0)==='#') return;
+    const parts=line.split(/[,，\t;；|]+/).map(s=>s.trim());
+    if(parts.length>=2 && /^-?\d+(\.\d+)?$/.test(parts[1])){
+      rows.push({ name:parts[0], score:parseFloat(parts[1]), group:parts[2]||'' });
+    }else if(parts.length>=3 && parts[0] && !/^-?\d+(\.\d+)?$/.test(parts[0])){
+      rows.push({ name:parts[0], score:null, group:parts.slice(2).join(' ') });
+    }else{
+      rows.push({ name: parts.length===1?parts[0]:line, score:null, group:'' });
+    }
+  });
+  return rows.filter(r=>r.name);
+}
+function decodeBuffer(buf){
+  let txt='';
+  try{ txt = new TextDecoder('utf-8').decode(buf); }catch(e){ txt=''; }
+  if(txt.indexOf('\uFFFD')>=0){
+    try{ txt = new TextDecoder('gbk').decode(buf); }catch(e2){}
+  }
+  return txt;
+}
+let xlsxPromise=null;
+function loadSheetJS(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  if(xlsxPromise) return xlsxPromise;
+  const CDNS=[
+    'https://registry.npmmirror.com/xlsx/0.18.5/files/dist/xlsx.full.min.js',
+    'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+  ];
+  xlsxPromise = new Promise(function(resolve,reject){
+    let i=0;
+    (function attempt(){
+      if(i>=CDNS.length){ reject(new Error('无法加载 Excel 解析库')); return; }
+      const url=CDNS[i++];
+      const s=document.createElement('script');
+      s.src=url; s.async=true;
+      const to=setTimeout(function(){ s.remove(); attempt(); },6000);
+      s.onload=function(){ clearTimeout(to); if(window.XLSX) resolve(window.XLSX); else { s.remove(); attempt(); } };
+      s.onerror=function(){ clearTimeout(to); s.remove(); attempt(); };
+      document.head.appendChild(s);
+    })();
+  });
+  return xlsxPromise;
+}
+async function parseWorkbook(file){
+  const XLSX = await loadSheetJS();
+  const wb = XLSX.read(await file.arrayBuffer(), {type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  if(!ws) return [];
+  const aoa = XLSX.utils.sheet_to_json(ws,{header:1, raw:true, defval:''});
+  const rows=[];
+  for(let i=0;i<aoa.length;i++){
+    const r=aoa[i]||[];
+    const first=String(r[0]==null?'':r[0]).trim();
+    if(!first) continue;
+    if(i===0 && /^(姓名|名字|学生|学生姓名|name|名单)$/i.test(first)) continue;
+    const second=r[1];
+    const score = (typeof second==='number')?second:(/^-?\d+(\.\d+)?$/.test(String(second).trim())?parseFloat(second):null);
+    const group = r[2]==null?'':String(r[2]).trim();
+    rows.push({name:first, score:score, group:group});
+  }
+  return rows;
+}
+
+/* ============================================================
+   8. 渲染 —— 通用
+   ============================================================ */
+function render(){
+  renderClassSelect();
+  renderPoints();
+  renderGroupFilter();
+  renderStats();
+  if(state.ui.view==='board'){ $('#board').classList.remove('hidden'); $('#tableView').classList.add('hidden'); $('#chartsView').classList.add('hidden'); renderBoard(); }
+  else if(state.ui.view==='table'){ $('#board').classList.add('hidden'); $('#tableView').classList.remove('hidden'); $('#chartsView').classList.add('hidden'); renderTable(); }
+  else { $('#board').classList.add('hidden'); $('#tableView').classList.add('hidden'); $('#chartsView').classList.remove('hidden'); renderCharts(); }
+  renderTimeline();
+  renderStorageCard();
+  renderBatchBar();
+  renderHeaderMeta();
+}
+function renderHeaderMeta(){
+  const c=currentClass();
+  $('#brandSub').textContent = c ? (c.name+' · '+c.students.length+' 名学生') : '还没有班级，先导入一份名单';
+}
+function renderClassSelect(){
+  const sel=$('#classSelect'); const cur=state.activeClassId;
+  sel.innerHTML = state.classes.length
+    ? state.classes.map(c=>'<option value="'+c.id+'"'+(c.id===cur?' selected':'')+'>'+esc(c.name)+'（'+c.students.length+'）</option>').join('')
+    : '<option value="">暂无班级</option>';
+}
+function renderPoints(){
+  const box=$('#pointChips');
+  const ps = state.settings.presets||[1,2,3,5];
+  box.innerHTML = ps.map(p=>'<button class="point-chip'+(p===state.settings.quick?' on':'')+'" data-p="'+p+'">'+p+'</button>').join('')
+    + '<button class="point-chip" id="pointCustom" title="自定义分值">…</button>';
+}
+function renderGroupFilter(){
+  const c=currentClass();
+  const groups = c ? Array.from(new Set(c.students.map(s=>s.group).filter(Boolean))) : [];
+  const sel=$('#groupFilter');
+  const cur=state.ui.group;
+  sel.innerHTML = '<option value="all">全部小组</option>' + groups.map(g=>'<option value="'+esc(g)+'"'+(g===cur?' selected':'')+'>'+esc(g)+'</option>').join('');
+  if(cur!=='all' && groups.indexOf(cur)<0){ state.ui.group='all'; sel.value='all'; }
+}
+function visibleStudents(){
+  const c=currentClass(); if(!c) return [];
+  const q=(state.ui.q||'').trim().toLowerCase();
+  let list=c.students.filter(function(s){
+    if(state.ui.group!=='all' && s.group!==state.ui.group) return false;
+    if(state.ui.starred && !s.starred) return false;
+    if(q){
+      const hay=(s.name+' '+(s.group||'')+' '+(s.note||'')).toLowerCase();
+      if(hay.indexOf(q)<0) return false;
+    }
+    return true;
+  });
+  const sort=state.ui.sort;
+  list.sort(function(a,b){
+    if(sort==='score'){ if(b.score!==a.score) return b.score-a.score; return a.joined-b.joined; }
+    if(sort==='name')  return String(a.name).localeCompare(String(b.name),'zh-Hans-CN');
+    if(sort==='group'){ const ga=a.group||'', gb=b.group||''; if(ga!==gb) return ga.localeCompare(gb,'zh-Hans-CN'); return b.score-a.score; }
+    return a.joined-b.joined;
+  });
+  return list;
+}
+function rankMap(){
+  const c=currentClass(); const map={};
+  if(!c) return map;
+  const sorted=c.students.slice().sort((a,b)=>b.score-a.score);
+  let lastScore=null, lastRank=0;
+  sorted.forEach(function(s,i){
+    if(s.score===lastScore){ map[s.id]=lastRank; }
+    else { map[s.id]=i+1; lastScore=s.score; lastRank=i+1; }
+  });
+  return map;
+}
+
+/* ============================================================
+   9. 渲染 —— 榜单
+   ============================================================ */
+function sparkSVG(ev){
+  if(!ev || ev.length<2) return '';
+  const pts=[[0,0]]; let cum=0;
+  for(let i=0;i<ev.length;i++){ cum+=ev[i].d; pts.push([pts.length,cum]); }
+  const w=84,h=26,p=3;
+  let mn=Infinity,mx=-Infinity;
+  pts.forEach(function(q){ if(q[1]<mn)mn=q[1]; if(q[1]>mx)mx=q[1]; });
+  const span=(mx-mn)||1;
+  const X=i=>(i/(pts.length-1))*(w-2*p)+p;
+  const Y=v=>h-p-((v-mn)/span)*(h-2*p);
+  let d='';
+  pts.forEach(function(q,i){ d += (i?'L':'M')+X(i).toFixed(1)+','+Y(q[1]).toFixed(1); });
+  const area = d+' L'+X(pts.length-1).toFixed(1)+','+h+' L'+p+','+h+' Z';
+  return '<svg class="spark-svg" viewBox="0 0 '+w+' '+h+'" aria-hidden="true"><path class="spark-area" d="'+area+'"/><path class="spark-line" d="'+d+'"/></svg>';
+}
+function renderBoard(){
+  const board=$('#board');
+  const cls=currentClass();
+  if(!cls || !cls.students.length){
+    board.innerHTML = '<div class="empty">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+
+      '<h2>还没有学生</h2>'+
+      '<p>粘贴一份名单，或从 txt / Excel 导入。每行一个人名，导入后初始分数默认为 0。</p>'+
+      '<div class="empty-actions">'+
+        '<button class="btn btn-primary" data-act="open-roster">录入名单</button>'+
+        '<button class="btn" data-act="new-class">新建班级</button>'+
+      '</div></div>';
+    return;
+  }
+  const list=visibleStudents();
+  if(!list.length){
+    board.innerHTML='<div class="empty"><h2>没有匹配的学生</h2><p>换个关键词，或清空筛选条件。</p><div class="empty-actions"><button class="btn" data-act="clear-filter">清空筛选</button></div></div>';
+    return;
+  }
+  const ranks=rankMap();
+  const maxAbs=Math.max(1, Math.max.apply(null, cls.students.map(s=>Math.abs(s.score||0))));
+  const top=cls.students.slice().sort((a,b)=>b.score-a.score)[0];
+  const topId_ = top?top.id:null;
+  const sel=state.ui.selected||[];
+
+  /* FLIP：记录旧位置 */
+  const prev=new Map();
+  $$('.board-row', board).forEach(function(r){ prev.set(r.dataset.id, r.getBoundingClientRect()); });
+
+  board.classList.toggle('multi', !!state.ui.multi);
+  board.innerHTML = list.map(function(s,i){
+    const r=ranks[s.id]||i+1;
+    const pct=clamp(Math.abs(s.score||0)/maxAbs*100,0,100);
+    const neg=(s.score||0)<0;
+    const isTop = s.id===topId_ && maxAbs>0 && s.score>0;
+    const sc = (s.score||0);
+    const scClass = sc>0?'':(sc<0?'neg':'zero');
+    const checked = sel.indexOf(s.id)>=0;
+    return '<div class="board-row'+(checked?' sel':'')+'" data-id="'+s.id+'">'+
+      '<div class="row-check"><label class="chk'+(checked?' on':'')+'" data-act="toggle-sel" data-id="'+s.id+'">'+
+        (checked?ICON.check:'')+'</label></div>'+
+      '<div class="rank'+(r<=3?' r'+r:'')+'">'+r+'</div>'+
+      '<div class="avatar" style="--c:'+colorFor(s.name)+'">'+esc(initial(s.name))+'</div>'+
+      '<div class="row-main">'+
+        '<div class="row-title">'+
+          '<span class="row-name" data-act="edit" data-id="'+s.id+'" style="cursor:pointer">'+esc(s.name)+'</span>'+
+          (s.group?'<span class="chip">'+esc(s.group)+'</span>':'')+
+          (s.starred?'<span class="row-title" style="display:inline-flex" title="课堂之星">'+ICON.star.replace('<svg','<svg class="star"')+'</span>':'')+
+          (s.note?'<span class="row-note">'+esc(s.note)+'</span>':'')+
+        '</div>'+
+        '<div class="bar"><div class="bar-fill '+(neg?'neg':(isTop?'top':'pos'))+'" style="width:'+pct.toFixed(1)+'%"></div></div>'+
+      '</div>'+
+      '<div class="spark">'+(state.settings.showSpark?sparkSVG(s.ev):'')+'</div>'+
+      '<div class="score-cell"><span class="score-num '+scClass+'">'+sc+'</span><span class="score-unit">分</span></div>'+
+      '<div class="row-acts">'+
+        '<button class="mini up" data-act="up" data-id="'+s.id+'" title="加分">'+ICON.plus+'</button>'+
+        '<button class="mini down" data-act="down" data-id="'+s.id+'" title="减分">'+ICON.minus+'</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  /* FLIP 动画 */
+  if(prev.size){
+    $$('.board-row', board).forEach(function(row){
+      const old=prev.get(row.dataset.id); if(!old) return;
+      const nw=row.getBoundingClientRect();
+      const dx=old.left-nw.left, dy=old.top-nw.top;
+      if(!dx && !dy) return;
+      row.style.transform='translate('+dx+'px,'+dy+'px)';
+      row.style.transition='none';
+      requestAnimationFrame(function(){
+        row.style.transition='';
+        row.style.transform='';
+      });
+    });
+  }
+}
+
+/* ============================================================
+   10. 渲染 —— 表格
+   ============================================================ */
+function renderTable(){
+  const cls=currentClass(); const box=$('#tableView');
+  if(!cls || !cls.students.length){ box.innerHTML='<div class="empty"><h2>还没有学生</h2></div>'; return; }
+  const list=visibleStudents(); const ranks=rankMap(); const sel=state.ui.selected||[];
+  let html='<table><thead><tr>'+
+    '<th style="width:46px">#</th><th>姓名</th><th>小组</th><th style="width:120px">分数</th>'+
+    '<th style="width:90px">课堂之星</th><th>备注</th><th style="width:150px">操作</th></tr></thead><tbody>';
+  list.forEach(function(s,i){
+    const checked=sel.indexOf(s.id)>=0;
+    html+='<tr'+(checked?' class="sel"':'')+' data-id="'+s.id+'">'+
+      '<td>'+(ranks[s.id]||i+1)+'</td>'+
+      '<td><span style="cursor:pointer;font-weight:600" data-act="edit" data-id="'+s.id+'">'+esc(s.name)+'</span></td>'+
+      '<td>'+(s.group?esc(s.group):'<span class="muted">—</span>')+'</td>'+
+      '<td class="num"><input class="cell-input" type="number" value="'+s.score+'" data-act="set-score" data-id="'+s.id+'"></td>'+
+      '<td><button class="btn btn-sm btn-ghost" data-act="star" data-id="'+s.id+'" title="标记课堂之星" style="'+(s.starred?'color:var(--gold)':'')+'">'+ICON.star+'</button></td>'+
+      '<td class="muted">'+(s.note?esc(s.note):'—')+'</td>'+
+      '<td><div class="rowbtns">'+
+        '<button class="mini up" data-act="up" data-id="'+s.id+'">'+ICON.plus+'</button>'+
+        '<button class="mini down" data-act="down" data-id="'+s.id+'">'+ICON.minus+'</button>'+
+        '<button class="btn btn-sm btn-ghost" data-act="edit" data-id="'+s.id+'" title="编辑">'+ICON.edit+'</button>'+
+      '</div></td></tr>';
+  });
+  html+='</tbody></table>';
+  box.innerHTML=html;
+}
+
+/* ============================================================
+   11. 渲染 —— 图表
+   ============================================================ */
+function renderCharts(){
+  const cls=currentClass(); const box=$('#chartsView');
+  if(!cls || !cls.students.length){ box.innerHTML='<div class="empty"><h2>还没有数据</h2><p>先录入学生名单。</p></div>'; return; }
+  const students=cls.students;
+  const sorted=students.slice().sort((a,b)=>b.score-a.score);
+  const top=sorted.slice(0,12);
+  const min=Math.min.apply(null, students.map(s=>s.score||0).concat([0]));
+  const max=Math.max.apply(null, students.map(s=>s.score||0).concat([0]));
+  const negSpan = min<0 ? Math.abs(min) : 0;
+  const posSpan = max>0 ? max : 1;
+  const total = max+negSpan || 1;
+
+  /* 1. Top 12 */
+  let topHtml='';
+  top.forEach(function(s){
+    const v=s.score||0;
+    const left = negSpan/total*100;
+    const w = Math.abs(v)/total*100;
+    topHtml+='<div class="bench">'+
+      '<span class="bench-label" title="'+esc(s.name)+'">'+esc(s.name)+'</span>'+
+      '<div class="bench-track">'+(negSpan?'<div style="position:absolute;left:'+left.toFixed(1)+'%;top:0;bottom:0;width:1px;background:var(--line-2)"></div>':'')+
+        '<div class="bench-fill'+(v<0?' neg':'')+'" style="width:'+w.toFixed(1)+'%;margin-left:'+(v<0?left.toFixed(1)+'%':'0')+'"></div></div>'+
+      '<span class="bench-val'+(v<0?' neg':'')+'">'+v+'</span></div>';
+  });
+
+  /* 2. 分布直方图 */
+  const buckets=[
+    {label:'≤ -5', f:function(v){return v<=-5;}}, {label:'-4 ~ -1', f:function(v){return v<0;}}, {label:'0 分', f:function(v){return v===0;}},
+    {label:'1 ~ 2', f:function(v){return v>0&&v<=2;}}, {label:'3 ~ 5', f:function(v){return v>2&&v<=5;}},
+    {label:'6 ~ 10', f:function(v){return v>5&&v<=10;}}, {label:'> 10', f:function(v){return v>10;}}
+  ].map(function(b){ return {label:b.label, n:students.filter(function(s){ return b.f(s.score||0); }).length}; });
+  const maxN=Math.max.apply(null, buckets.map(b=>b.n).concat([1]));
+  const histHtml=buckets.map(function(b){
+    return '<div class="histo-col" title="'+b.label+'：'+b.n+' 人">'+
+      '<span class="histo-count">'+b.n+'</span>'+
+      '<div class="histo-bar" style="height:'+Math.max(2,b.n/maxN*92)+'px"></div>'+
+      '<span class="histo-label">'+b.label+'</span></div>';
+  }).join('');
+
+  /* 3. 小组榜 */
+  const gmap={};
+  students.forEach(function(s){ const g=s.group||'未分组'; gmap[g]=(gmap[g]||0)+(s.score||0); });
+  const gk=Object.keys(gmap).sort((a,b)=>gmap[b]-gmap[a]);
+  const gmax=Math.max.apply(null, gk.map(k=>Math.abs(gmap[k])).concat([1]));
+  const gHtml = gk.length ? gk.map(function(g){
+    const v=gmap[g], n=students.filter(s=>(s.group||'未分组')===g).length;
+    return '<div class="bench"><span class="bench-label">'+esc(g)+'</span>'+
+      '<div class="bench-track"><div class="bench-fill'+(v<0?' neg':'')+'" style="width:'+(Math.abs(v)/gmax*100).toFixed(1)+'%"></div></div>'+
+      '<span class="bench-val'+(v<0?' neg':'')+'">'+v+'</span></div>';
+  }).join('') : '<div class="muted" style="font-size:12.5px;padding:8px 0">还没有小组，先在学生设置里分配小组。</div>';
+
+  /* 4. 平均分走势 */
+  const evs=[];
+  students.forEach(function(s){ (s.ev||[]).forEach(function(e){ evs.push({t:e.t,d:e.d,id:s.id}); }); });
+  evs.sort((a,b)=>a.t-b.t);
+  let lineHtml='<div class="muted" style="font-size:12.5px;padding:8px 0">还没有加分记录。</div>';
+  if(evs.length>=2){
+    const n=students.length;
+    let cum=0; const series=[0];
+    for(let i=0;i<evs.length;i++){ cum+=evs[i].d; series.push(cum/n); }
+    const W=560,H=150,p=22;
+    let mn=Infinity,mx=-Infinity;
+    series.forEach(v=>{ if(v<mn)mn=v; if(v>mx)mx=v; });
+    if(mx-mn<0.5){ mn-=0.5; mx+=0.5; }
+    const X=i=>(i/(series.length-1))*(W-2*p)+p;
+    const Y=v=>H-p-((v-mn)/(mx-mn))*(H-2*p);
+    let d=''; series.forEach(function(v,i){ d+=(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1); });
+    const area=d+' L'+X(series.length-1).toFixed(1)+','+(H-p)+' L'+p+','+(H-p)+' Z';
+    let grid='';
+    for(let g=0;g<=3;g++){ const y=p+(H-2*p)*g/3; grid+='<line class="lc-grid" x1="'+p+'" y1="'+y.toFixed(1)+'" x2="'+(W-p)+'" y2="'+y.toFixed(1)+'"/>'; }
+    lineHtml='<svg class="line-chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+
+      grid+'<path class="lc-area" d="'+area+'"/><path class="lc-line" d="'+d+'"/>'+
+      '<circle class="lc-dot" cx="'+X(series.length-1).toFixed(1)+'" cy="'+Y(series[series.length-1]).toFixed(1)+'" r="4"/>'+
+      '<text class="lc-lbl" x="'+p+'" y="14">最高 '+mx.toFixed(1)+'</text>'+
+      '<text class="lc-lbl" x="'+p+'" y="'+(H-6)+'">最低 '+mn.toFixed(1)+'</text></svg>';
+  }
+
+  box.innerHTML =
+    '<div class="chart-card"><h3>'+ICON.bar+'积分排行 Top 12</h3><div class="sub">按当前分数从高到低</div>'+topHtml+'</div>'+
+    '<div class="chart-card"><h3>'+ICON.layers+'分数分布</h3><div class="sub">全班 '+students.length+' 名学生的分数区间</div><div class="histo">'+histHtml+'</div></div>'+
+    '<div class="chart-card"><h3>'+ICON.users+'小组总积分</h3><div class="sub">按小组汇总</div>'+gHtml+'</div>'+
+    '<div class="chart-card"><h3>'+ICON.trend+'班级平均分走势</h3><div class="sub">每次加减分后的全班平均分</div>'+lineHtml+'</div>';
+}
+
+/* ============================================================
+   12. 渲染 —— 侧栏
+   ============================================================ */
+function renderStats(){
+  const c=currentClass();
+  if(!c){ ['stCount','stAvg','stMax','stStar','stUp','stDown'].forEach(i=>$('#'+i).textContent='0'); return; }
+  const ss=c.students;
+  const tot=sum(ss.map(s=>s.score||0));
+  $('#stCount').textContent=ss.length;
+  $('#stAvg').textContent = ss.length ? (tot/ss.length).toFixed(1) : '0';
+  $('#stMax').textContent = ss.length ? Math.max.apply(null, ss.map(s=>s.score||0)) : 0;
+  $('#stStar').textContent = ss.filter(s=>s.starred).length;
+  const tk=dayKey();
+  let up=0,down=0;
+  ss.forEach(function(s){ (s.ev||[]).forEach(function(e){ if(dayKey(e.t)===tk){ if(e.d>0) up+=e.d; else if(e.d<0) down+=Math.abs(e.d); } }); });
+  $('#stUp').textContent='+'+up;
+  $('#stDown').textContent='-'+down;
+}
+function renderTimeline(){
+  const c=currentClass(); const tl=$('#timeline');
+  if(!c){ tl.innerHTML='<div class="timeline-empty">还没有班级</div>'; $('#tlCount').textContent='0 条'; return; }
+  const evs=[];
+  c.students.forEach(function(s){ (s.ev||[]).forEach(function(e){ evs.push({t:e.t,d:e.d,s:s.name}); }); });
+  evs.sort((a,b)=>b.t-a.t);
+  const top=evs.slice(0,18);
+  $('#tlCount').textContent=evs.length+' 条';
+  if(!top.length){ tl.innerHTML='<div class="timeline-empty">还没有加减分记录<br>点「+ / −」开始记录</div>'; return; }
+  tl.innerHTML=top.map(function(e){
+    return '<li class="'+(e.d>0?'up':'down')+'"><span class="tl-name">'+esc(e.s)+'</span>'+
+      '<span class="tl-delta '+(e.d>0?'up':'down')+'">'+fmtDelta(e.d)+'</span>'+
+      '<span class="tl-time">'+fmtDate(e.t)+' '+fmtClock(e.t)+'</span></li>';
+  }).join('');
+}
+function renderStorageCard(){
+  const kv=$('#storageKv');
+  const ck=readCookies();
+  const cookieKeys=Object.keys(ck).filter(k=>k.indexOf(CK_STU)===0);
+  const lsSize = (function(){ try{ return (localStorage.getItem(LS_KEY)||'').length; }catch(e){ return 0; } })();
+  const rows=[
+    ['本地存储 (localStorage)', '<span class="dot '+(lsOk?'ok':'bad')+'"></span>'+(lsOk?'正常':'不可用')],
+    ['Cookie 双份备份', '<span class="dot '+(cookieOk?'ok':'bad')+'"></span>'+(cookieOk?cookieKeys.length+' 个学生 cookie':'不可用')],
+    ['班级 / 学生', state.classes.length+' 个班级 · '+sum(state.classes.map(c=>c.students.length))+' 人'],
+    ['最近保存', state.savedAt?fmtDate(state.savedAt)+' '+fmtClock(state.savedAt):'—']
+  ];
+  kv.innerHTML=rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('');
+  if(!cookieOk){
+    kv.innerHTML+='<dt style="grid-column:1/-1;color:var(--gold);font-size:11.5px;line-height:1.5">'+
+      '当前浏览器禁用了 Cookie（用 file:// 直接打开时 Chrome 会拦截）。请改用本地服务器或部署链接访问，即可启用「每生一个 cookie」的双份备份。</dt>';
+  } else if(cookieKeys.length>COOKIE_SOFT_LIMIT){
+    kv.innerHTML+='<dt style="grid-column:1/-1;color:var(--gold);font-size:11.5px;line-height:1.5">Cookie 数量接近上限，建议用「导出备份」保存一份文件。</dt>';
+  }
+}
+function renderBatchBar(){
+  const existing=document.querySelector('.batchbar');
+  const ids=state.ui.selected||[];
+  if(!ids.length){ if(existing) existing.remove(); return; }
+  const cls=currentClass();
+  const html='<div class="batchbar"><span class="count">已选 <b>'+ids.length+'</b> 名学生</span>'+
+    '<span class="divider"></span>'+
+    '<button class="btn btn-sm" data-act="batch-up">加分</button>'+
+    '<button class="btn btn-sm" data-act="batch-down">减分</button>'+
+    '<button class="btn btn-sm" data-act="batch-set">设定分数</button>'+
+    '<button class="btn btn-sm" data-act="batch-group">分配小组</button>'+
+    '<button class="btn btn-sm" data-act="batch-move">移动到…</button>'+
+    '<button class="btn btn-sm" data-act="batch-star">星标</button>'+
+    '<button class="btn btn-sm btn-danger" data-act="batch-del">'+ICON.trash+'</button>'+
+    '<span class="divider"></span>'+
+    '<button class="btn btn-sm btn-ghost" data-act="batch-clear">取消</button></div>';
+  if(existing){ existing.outerHTML=html; }
+  else document.body.insertAdjacentHTML('beforeend',html);
+}
+
+/* ============================================================
+   13. 模态框
+   ============================================================ */
+let modalStack=[];
+let modalOpenedAt=0;
+function openModal(html, cls){
+  while(modalStack.length) modalStack.pop().remove();
+  const ov=document.createElement('div');
+  ov.className='overlay';
+  ov.innerHTML='<div class="modal '+(cls||'')+'">'+html+'</div>';
+  /* 仅在弹窗已稳定显示后，才允许点击遮罩空白处关闭，避免误触 */
+  ov.addEventListener('mousedown',function(e){
+    if(e.target===ov && (Date.now()-modalOpenedAt)>400) closeModal();
+  });
+  document.body.appendChild(ov);
+  modalStack.push(ov);
+  modalOpenedAt=Date.now();
+  return ov;
+}
+function closeModal(){
+  const ov=modalStack.pop();
+  if(ov) ov.remove();
+}
+function closeAllModals(){ while(modalStack.length) modalStack.pop().remove(); }
+
+function modalHead(title, icon){
+  return '<div class="modal-head">'+(icon||'')+'<h2>'+esc(title)+'</h2>'+
+    '<button class="btn btn-icon btn-ghost x" data-act="close-modal" title="关闭">'+ICON.x+'</button></div>';
+}
+
+/* ---------- 名单录入 ---------- */
+function openRosterModal(){
+  const cls=currentClass();
+  const targetName = cls ? cls.name : '我的班级';
+  const ov=openModal(
+    modalHead('录入名单', ICON.users)+
+    '<div class="modal-body">'+
+      '<div class="field">'+
+        '<label>方式一 · 直接粘贴名单 <span class="muted" style="font-weight:400">（每行一个人名）</span></label>'+
+        '<textarea class="inp" id="rosterText" placeholder="张三\n李四\n王五\n赵六"></textarea>'+
+        '<div class="hint">也支持「姓名,分数,小组」格式，例如 <code>张三,10,第一组</code>；重复姓名默认跳过。</div>'+
+      '</div>'+
+      '<div class="field">'+
+        '<label>方式二 · 从文件导入</label>'+
+        '<div class="drop" id="rosterDrop">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>'+
+          '<p>点击选择，或把文件拖到这里</p>'+
+          '<span>支持 .txt / .csv / .xlsx / .xls — 每行一个人名</span>'+
+        '</div>'+
+        '<input type="file" id="rosterFile" accept=".txt,.csv,.tsv,.xlsx,.xls" class="hidden">'+
+      '</div>'+
+      '<div class="row3">'+
+        '<div class="field"><label>导入到</label>'+
+          '<select class="select" id="rosterTarget" style="width:100%">'+
+            (cls?'<option value="cur">当前班级（'+esc(targetName)+'）</option>':'')+
+            '<option value="new">新建一个班级</option>'+
+            state.classes.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('')+
+          '</select>'+
+        '</div>'+
+        '<div class="field"><label>导入方式</label>'+
+          '<select class="select" id="rosterMode" style="width:100%">'+
+            '<option value="append">追加到现有名单</option>'+
+            '<option value="replace">清空后重新导入</option>'+
+          '</select>'+
+        '</div>'+
+        '<div class="field"><label>初始分数</label>'+
+          '<input class="inp" id="rosterInit" type="number" value="'+(state.settings.defaultInitial||0)+'">'+
+        '</div>'+
+      '</div>'+
+      '<div class="field">'+
+        '<label>新班级名称 <span class="muted" style="font-weight:400">（选择「新建一个班级」时使用）</span></label>'+
+        '<input class="inp" id="rosterNewName" placeholder="例如：三年级二班">'+
+      '</div>'+
+      '<div class="preview hidden" id="rosterPreview">'+
+        '<div class="preview-head">解析预览 <span class="tag" id="rosterPreviewTag"></span></div>'+
+        '<div class="preview-list" id="rosterPreviewList"></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="modal-foot">'+
+      '<button class="btn" data-act="close-modal">取消</button>'+
+      '<button class="btn btn-primary" data-act="roster-confirm">'+ICON.check+' 导入名单</button>'+
+    '</div>');
+  let parsed=null;
+  function refreshPreview(){
+    const txt=$('#rosterText').value;
+    const rows=parseRosterText(txt);
+    parsed=rows;
+    const pv=$('#rosterPreview');
+    if(!rows.length){ pv.classList.add('hidden'); return; }
+    pv.classList.remove('hidden');
+    $('#rosterPreviewTag').textContent='共 '+rows.length+' 人';
+    $('#rosterPreviewList').innerHTML=rows.slice(0,40).map(r=>'<span class="preview-item">'+esc(r.name)+(r.score!==null?' · '+r.score:'')+'</span>').join('')
+      + (rows.length>40?'<span class="preview-item muted">…还有 '+(rows.length-40)+' 人</span>':'');
+  }
+  $('#rosterText').addEventListener('input',refreshPreview);
+
+  const drop=$('#rosterDrop'), file=$('#rosterFile');
+  drop.addEventListener('click',()=>file.click());
+  drop.addEventListener('dragover',e=>{ e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{
+    e.preventDefault(); drop.classList.remove('over');
+    if(e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  file.addEventListener('change',()=>{ if(file.files[0]) handleFile(file.files[0]); });
+
+  async function handleFile(f){
+    toast('正在解析 '+f.name+' …');
+    try{
+      const ext=(f.name.split('.').pop()||'').toLowerCase();
+      let rows=[];
+      if(ext==='xlsx'||ext==='xls'){
+        rows=await parseWorkbook(f);
+      }else{
+        const buf=await f.arrayBuffer();
+        rows=parseRosterText(decodeBuffer(buf));
+      }
+      if(!rows.length){ toast('没有解析到任何姓名','err'); return; }
+      $('#rosterText').value=rows.map(r=>r.name+(r.score!==null?','+r.score:'')+(r.group?','+r.group:'')).join('\n');
+      refreshPreview();
+      toast('已解析 '+rows.length+' 个姓名','ok');
+    }catch(e){
+      toast('解析失败：'+(e&&e.message?e.message:'未知错误'),'err');
+    }
+  }
+
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act;
+    if(act==='close-modal'){ closeModal(); return; }
+    if(act==='roster-confirm'){
+      const rows=parsed||parseRosterText($('#rosterText').value);
+      if(!rows.length){ toast('请先输入或导入名单','warn'); return; }
+      const init=parseInt($('#rosterInit').value,10); state.settings.defaultInitial=isNaN(init)?0:init;
+      const target=$('#rosterTarget').value;
+      const mode=$('#rosterMode').value;
+      let dest=null, isNew=false;
+      if(target==='new'){
+        const nm=$('#rosterNewName').value.trim()||('班级 '+(state.classes.length+1));
+        dest=createClass(nm); isNew=true;
+      }else if(target==='cur'){
+        dest=currentClass()||createClass($('#rosterNewName').value.trim()||'我的班级');
+        isNew=!cls;
+      }else{
+        dest=classById(target);
+        if(!dest){ dest=createClass('导入的班级'); isNew=true; }
+      }
+      const res=addStudentsToClass(dest, rows, mode);
+      state.activeClassId=dest.id;
+      save(); render();
+      closeModal();
+      toast('成功导入 '+res.added+' 名学生'+(res.skipped?'（跳过 '+res.skipped+' 个重名）':''),'ok');
+    }
+  });
+}
+
+/* ---------- 班级管理 ---------- */
+function openClassesModal(){
+  const ov=openModal(
+    modalHead('班级管理', ICON.layers)+
+    '<div class="modal-body">'+
+      '<div class="field"><label>新建班级</label>'+
+        '<div style="display:flex;gap:8px"><input class="inp" id="newClsName" placeholder="班级名称，例如：三年级二班">'+
+        '<button class="btn btn-primary" data-act="create-class">'+ICON.plus+' 新建</button></div>'+
+        '<div class="hint">每个班级拥有独立的学生名单与分数，可随时切换。</div>'+
+      '</div>'+
+      '<div class="field"><label>全部班级</label><div class="cls-list" id="clsList"></div></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" data-act="close-modal">完成</button></div>');
+
+  function paint(){
+    const list=$('#clsList');
+    if(!state.classes.length){ list.innerHTML='<div class="muted" style="font-size:13px;padding:10px 0">还没有班级。</div>'; return; }
+    list.innerHTML=state.classes.map(function(c){
+      const on=c.id===state.activeClassId;
+      const tot=sum(c.students.map(s=>s.score||0));
+      return '<div class="cls-item'+(on?' on':'')+'" data-id="'+c.id+'">'+
+        '<div class="cls-icon">'+ICON.folder+'</div>'+
+        '<div class="cls-meta"><strong>'+esc(c.name)+'</strong>'+
+          '<span>'+c.students.length+' 人 · 总分 '+tot+' · '+fmtDate(c.createdAt)+' 创建</span></div>'+
+        '<div class="cls-acts">'+
+          (on?'<span class="chip chip-accent">当前</span>':'<button class="btn btn-sm" data-act="switch-class" data-id="'+c.id+'">切换</button>')+
+          '<button class="btn btn-sm btn-ghost" data-act="rename-class" data-id="'+c.id+'" title="重命名">'+ICON.edit+'</button>'+
+          '<button class="btn btn-sm btn-ghost" data-act="dup-class" data-id="'+c.id+'" title="复制班级">'+ICON.copy+'</button>'+
+          '<button class="btn btn-sm btn-ghost" data-act="export-class" data-id="'+c.id+'" title="导出 CSV">'+ICON.file+'</button>'+
+          '<button class="btn btn-sm btn-ghost btn-danger" data-act="del-class" data-id="'+c.id+'" title="删除">'+ICON.trash+'</button>'+
+        '</div></div>';
+    }).join('');
+  }
+  paint();
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act, id=b.dataset.id;
+    if(act==='close-modal'){ closeModal(); return; }
+    if(act==='create-class'){
+      const nm=$('#newClsName').value.trim();
+      if(!nm){ toast('请输入班级名称','warn'); return; }
+      pushSnap();
+      const c=createClass(nm); state.activeClassId=c.id; save(); render(); paint(); $('#newClsName').value='';
+      toast('已创建「'+nm+'」','ok');
+    }
+    else if(act==='switch-class'){ switchClass(id); paint(); }
+    else if(act==='rename-class'){ renameClass(id); paint(); }
+    else if(act==='dup-class'){ duplicateClass(id); paint(); toast('已复制班级','ok'); }
+    else if(act==='export-class'){ exportClassCsv(id); }
+    else if(act==='del-class'){ deleteClass(id); paint(); }
+  });
+}
+function createClass(name){
+  const c={ id:uid(), name:name||('班级 '+(state.classes.length+1)), note:'', createdAt:Date.now(), students:[] };
+  state.classes.push(c);
+  return c;
+}
+function switchClass(id){
+  state.activeClassId=id;
+  state.ui.selected=[]; state.ui.group='all'; state.ui.q=''; state.ui.starred=false;
+  $('#searchInput').value='';
+  save(); render();
+}
+function renameClass(id){
+  const c=classById(id); if(!c) return;
+  const n=prompt('修改班级名称', c.name);
+  if(n===null) return;
+  const t=String(n).trim(); if(!t) return;
+  pushSnap(); c.name=t; save(); render();
+}
+function duplicateClass(id){
+  const c=classById(id); if(!c) return;
+  pushSnap();
+  const nc=createClass(c.name+' 副本');
+  nc.students=c.students.map(function(s){
+    return { id:uid(), name:s.name, score:s.score, initial:s.initial, group:s.group, note:s.note,
+             starred:s.starred, ev:(s.ev||[]).slice(), updatedAt:s.updatedAt, joined:Date.now() };
+  });
+  save(); render();
+}
+function deleteClass(id){
+  const c=classById(id); if(!c) return;
+  if(!confirm('确定删除班级「'+c.name+'」及其 '+c.students.length+' 名学生的分数？此操作可用「撤销」恢复。')) return;
+  pushSnap();
+  state.classes=state.classes.filter(x=>x.id!==id);
+  if(state.activeClassId===id) state.activeClassId=state.classes.length?state.classes[0].id:null;
+  state.ui.selected=[];
+  save(); render();
+  toast('已删除班级「'+c.name+'」');
+}
+
+/* ---------- 学生编辑 ---------- */
+function openStudentModal(id){
+  const cls=currentClass(); const s=cls.students.find(x=>x.id===id); if(!s) return;
+  const groups=Array.from(new Set(cls.students.map(x=>x.group).filter(Boolean)));
+  const ov=openModal(
+    modalHead('编辑学生', ICON.edit)+
+    '<div class="modal-body">'+
+      '<div class="field"><label>姓名</label><input class="inp" id="stName" value="'+esc(s.name)+'"></div>'+
+      '<div class="row2">'+
+        '<div class="field"><label>小组</label><input class="inp" id="stGroup" list="grpList" value="'+esc(s.group||'')+'" placeholder="例如：第一组">'+
+          '<datalist id="grpList">'+groups.map(g=>'<option value="'+esc(g)+'">').join('')+'</datalist></div>'+
+        '<div class="field"><label>备注</label><input class="inp" id="stNote" value="'+esc(s.note||'')+'" placeholder="选填"></div>'+
+      '</div>'+
+      '<div class="row2">'+
+        '<div class="field"><label>当前分数</label><input class="inp" id="stScore" type="number" value="'+s.score+'"></div>'+
+        '<div class="field"><label>初始分数（重置目标）</label><input class="inp" id="stInit" type="number" value="'+(s.initial||0)+'"></div>'+
+      '</div>'+
+      '<div class="field"><label>课堂之星</label>'+
+        '<label class="opt-row"><input type="checkbox" id="stStar"'+(s.starred?' checked':'')+'>'+
+        '<span class="t">标记为课堂之星</span><span class="d">在榜单中显示星标</span></label></div>'+
+    '</div>'+
+    '<div class="modal-foot">'+
+      '<button class="btn btn-danger" data-act="del-student">'+ICON.trash+' 删除</button>'+
+      '<div style="flex:1"></div>'+
+      '<button class="btn" data-act="close-modal">取消</button>'+
+      '<button class="btn btn-primary" data-act="save-student">'+ICON.check+' 保存</button>'+
+    '</div>');
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act;
+    if(act==='close-modal'){ closeModal(); return; }
+    if(act==='del-student'){
+      if(!confirm('删除学生「'+s.name+'」？')) return;
+      removeStudents([id]); closeModal(); return;
+    }
+    if(act==='save-student'){
+      const nm=$('#stName').value.trim(); if(!nm){ toast('姓名不能为空','warn'); return; }
+      pushSnap();
+      s.name=nm;
+      s.group=$('#stGroup').value.trim();
+      s.note=$('#stNote').value.trim();
+      const sc=parseInt($('#stScore').value,10); if(!isNaN(sc)) s.score=sc;
+      const ini=parseInt($('#stInit').value,10); if(!isNaN(ini)) s.initial=ini;
+      s.starred=$('#stStar').checked;
+      s.updatedAt=Date.now();
+      save(); render(); closeModal(); toast('已保存');
+    }
+  });
+}
+
+/* ---------- 设置 ---------- */
+function openSettingsModal(){
+  const ov=openModal(
+    modalHead('设置与数据', ICON.save)+
+    '<div class="modal-body">'+
+      '<div class="field"><label>快速分值（榜单上 + / − 使用）</label>'+
+        '<div style="display:flex;gap:8px;align-items:center">'+
+          '<input class="inp" id="stQuick" type="number" value="'+state.settings.quick+'" style="max-width:110px">'+
+          '<span class="muted" style="font-size:12.5px">当前生效</span>'+
+        '</div>'+
+        '<div class="hint">还可以在榜单工具栏上直接切换 1 / 2 / 3 / 5。</div></div>'+
+      '<div class="field"><label>默认初始分数</label>'+
+        '<input class="inp" id="stDefInit" type="number" value="'+(state.settings.defaultInitial||0)+'"></div>'+
+      '<div class="field"><label>偏好</label>'+
+        '<label class="opt-row"><input type="checkbox" id="stSound"'+(state.settings.sound?' checked':'')+'>'+
+          '<span class="t">加减分音效</span><span class="d">每次操作给出提示音</span></label>'+
+        '<label class="opt-row"><input type="checkbox" id="stConfetti"'+(state.settings.confetti?' checked':'')+'>'+
+          '<span class="t">登顶彩带动画</span><span class="d">第一名易主时播放</span></label>'+
+        '<label class="opt-row"><input type="checkbox" id="stSpark"'+(state.settings.showSpark?' checked':'')+'>'+
+          '<span class="t">显示分数走势</span><span class="d">榜单右侧的迷你折线</span></label></div>'+
+      '<div class="field"><label>数据备份</label>'+
+        '<div style="display:flex;gap:7px;flex-wrap:wrap">'+
+          '<button class="btn btn-sm" data-act="export-json">'+ICON.save+' 导出全部数据</button>'+
+          '<button class="btn btn-sm" data-act="import-json">'+ICON.upload+' 导入备份文件</button>'+
+          '<button class="btn btn-sm" data-act="export-csv">'+ICON.file+' 导出当前成绩表</button>'+
+        '</div>'+
+        '<input type="file" id="importJsonFile" accept=".json" class="hidden">'+
+        '<div class="hint">数据同时保存在浏览器本地存储和 Cookie（每名学生一个独立 Cookie）。导出 JSON 可用于换电脑迁移。</div></div>'+
+      '<div class="field"><label style="color:var(--down)">危险操作</label>'+
+        '<button class="btn btn-sm btn-danger" data-act="wipe">'+ICON.trash+' 清空全部数据</button>'+
+        '<div class="hint">会删除所有班级、学生与分数。请先导出备份。</div></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" data-act="close-modal">关闭</button>'+
+      '<button class="btn btn-primary" data-act="save-settings">'+ICON.check+' 保存设置</button></div>');
+  const file=$('#importJsonFile');
+  file.addEventListener('change',function(){
+    const f=file.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=function(){
+      try{
+        const obj=JSON.parse(rd.result);
+        const st=obj && obj.classes ? obj : (obj && obj.state ? obj.state : null);
+        if(!st || !st.classes) throw new Error('文件格式不正确');
+        if(!confirm('导入备份将覆盖当前全部数据，确定继续？')) return;
+        pushSnap();
+        state=Object.assign(defaultState(), st);
+        state.settings=Object.assign(defaultState().settings, st.settings||{});
+        state.ui=Object.assign(defaultState().ui, st.ui||{});
+        save(); render(); closeModal(); toast('备份已导入','ok');
+      }catch(err){ toast('导入失败：'+err.message,'err'); }
+    };
+    rd.readAsText(f);
+    file.value='';
+  });
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act;
+    if(act==='close-modal'){ closeModal(); return; }
+    if(act==='export-json') exportJson();
+    else if(act==='import-json') file.click();
+    else if(act==='export-csv') exportCsv(currentClass());
+    else if(act==='wipe'){
+      if(!confirm('确定清空全部数据？此操作不可恢复。')) return;
+      pushSnap();
+      state=defaultState(); snaps=[]; redoStack=[];
+      try{ localStorage.removeItem(LS_KEY); }catch(e){}
+      Object.keys(readCookies()).forEach(function(k){ if(k.indexOf('csb_')===0) delCookie(k); });
+      save(); render(); closeModal(); toast('已清空全部数据');
+    }
+    else if(act==='save-settings'){
+      const q=parseInt($('#stQuick').value,10); if(!isNaN(q)&&q>0) state.settings.quick=q;
+      const di=parseInt($('#stDefInit').value,10); if(!isNaN(di)) state.settings.defaultInitial=di;
+      state.settings.sound=$('#stSound').checked;
+      state.settings.confetti=$('#stConfetti').checked;
+      state.settings.showSpark=$('#stSpark').checked;
+      save(); render(); closeModal(); toast('设置已保存','ok');
+    }
+  });
+}
+
+/* ---------- 批量操作 ---------- */
+function promptNumber(title, label, def){
+  const v=prompt(title, def);
+  if(v===null) return null;
+  const n=parseInt(String(v).replace(/[^\d-]/g,''),10);
+  return isNaN(n)?null:n;
+}
+function batchSet(){
+  const ids=state.ui.selected; if(!ids.length) return;
+  const n=promptNumber('设定这 '+ids.length+' 名学生的分数为：','分数',0);
+  if(n===null) return;
+  const cls=currentClass();
+  const targets=cls.students.filter(s=>ids.indexOf(s.id)>=0);
+  const deltas=targets.map(s=>({id:s.id,d:n-(s.score||0)})).filter(x=>x.d!==0);
+  if(!deltas.length){ toast('分数没有变化','warn'); return; }
+  pushSnap();
+  const t=Date.now();
+  targets.forEach(function(s){
+    const d=n-(s.score||0);
+    if(d===0) return;
+    s.score=n; s.updatedAt=t; s.ev.push({t:t,d:d,r:'批量设定'});
+    if(s.ev.length>MAX_EV) s.ev.splice(0,s.ev.length-MAX_EV);
+  });
+  save(); render(); toast('已设定 '+targets.length+' 名学生的分数','ok');
+}
+function batchGroup(){
+  const ids=state.ui.selected; if(!ids.length) return;
+  const g=prompt('把这 '+ids.length+' 名学生分配到哪个小组？（留空表示未分组）','');
+  if(g===null) return;
+  assignGroup(ids, String(g).trim());
+}
+function batchMove(){
+  const ids=state.ui.selected; if(!ids.length) return;
+  const others=state.classes.filter(c=>c.id!==state.activeClassId);
+  if(!others.length){ toast('没有其他班级，请先新建一个','warn'); return; }
+  const ov=openModal(
+    modalHead('移动到班级', ICON.folder)+
+    '<div class="modal-body"><div class="cls-list" id="mvList">'+
+      others.map(c=>'<div class="cls-item" data-id="'+c.id+'"><div class="cls-icon">'+ICON.folder+'</div>'+
+        '<div class="cls-meta"><strong>'+esc(c.name)+'</strong><span>'+c.students.length+' 名学生</span></div>'+
+        '<div class="cls-acts"><button class="btn btn-sm btn-primary" data-act="do-move" data-id="'+c.id+'">移动</button></div></div>').join('')+
+    '</div></div>'+
+    '<div class="modal-foot"><button class="btn" data-act="close-modal">取消</button></div>');
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    if(b.dataset.act==='close-modal'){ closeModal(); return; }
+    if(b.dataset.act==='do-move'){ moveStudents(ids, b.dataset.id); closeModal(); }
+  });
+}
+function batchStar(){
+  const ids=state.ui.selected; const cls=currentClass(); if(!cls||!ids.length) return;
+  pushSnap();
+  const allStar=cls.students.filter(s=>ids.indexOf(s.id)>=0).every(s=>s.starred);
+  cls.students.forEach(s=>{ if(ids.indexOf(s.id)>=0){ s.starred=!allStar; s.updatedAt=Date.now(); } });
+  save(); render(); toast(allStar?'已取消星标':'已标记课堂之星','ok');
+}
+
+/* ---------- 随机点名 ---------- */
+function openRandomModal(){
+  const list=visibleStudents();
+  if(!list.length){ toast('当前没有可点名的学生','warn'); return; }
+  const ov=openModal(
+    '<div class="modal-head"><h2>随机点名</h2><button class="btn btn-icon btn-ghost x" data-act="close-modal">'+ICON.x+'</button></div>'+
+    '<div class="modal-body" style="padding:0">'+
+      '<div class="picker-name" id="pkName">准备中…</div>'+
+      '<div class="picker-sub" id="pkSub">共 '+list.length+' 名候选学生</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn" data-act="close-modal">关闭</button>'+
+      '<button class="btn btn-primary" data-act="pk-roll">'+ICON.shuffle+' 再点一次</button></div>');
+  const el=$('#pkName');
+  let timer=null;
+  function roll(){
+    clearInterval(timer);
+    el.classList.add('spin');
+    let ticks=0;
+    const total=18+Math.floor(Math.random()*8);
+    timer=setInterval(function(){
+      el.textContent=list[Math.floor(Math.random()*list.length)].name;
+      if(++ticks>=total){
+        clearInterval(timer);
+        el.classList.remove('spin');
+        const s=list[Math.floor(Math.random()*list.length)];
+        el.textContent=s.name;
+        $('#pkSub').textContent=s.group?('小组：'+s.group+' · 当前 '+s.score+' 分'):('当前 '+s.score+' 分');
+        beep('up');
+      }
+    },60);
+  }
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    if(b.dataset.act==='close-modal'){ clearInterval(timer); closeModal(); }
+    if(b.dataset.act==='pk-roll') roll();
+  });
+  setTimeout(roll,120);
+}
+
+/* ============================================================
+   14. 导出
+   ============================================================ */
+function download(filename, content, mime){
+  const blob=new Blob([content],{type:mime||'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },200);
+}
+function exportJson(){
+  const data=JSON.stringify(state,null,2);
+  download('课堂表现排行榜-备份-'+dayKey()+'.json', data, 'application/json;charset=utf-8');
+  toast('备份已导出','ok');
+}
+function exportCsv(cls){
+  if(!cls){ toast('没有可导出的班级','warn'); return; }
+  let csv='排名,姓名,小组,分数,课堂之星,备注\n';
+  const sorted=cls.students.slice().sort((a,b)=>b.score-a.score);
+  sorted.forEach(function(s,i){
+    csv+=[i+1,s.name,s.group||'',s.score,s.starred?'是':'否',s.note||'']
+      .map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(',')+'\n';
+  });
+  download((cls.name||'成绩表')+'-'+dayKey()+'.csv', '﻿'+csv, 'text/csv;charset=utf-8');
+  toast('成绩表已导出','ok');
+}
+function exportClassCsv(id){
+  const c=classById(id); if(!c) return;
+  let csv='排名,姓名,小组,分数,课堂之星,备注\n';
+  c.students.slice().sort((a,b)=>b.score-a.score).forEach(function(s,i){
+    csv+=[i+1,s.name,s.group||'',s.score,s.starred?'是':'否',s.note||'']
+      .map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(',')+'\n';
+  });
+  download((c.name||'成绩表')+'-'+dayKey()+'.csv','﻿'+csv,'text/csv;charset=utf-8');
+  toast('已导出「'+c.name+'」','ok');
+}
+
+/* ============================================================
+   15. 计时器
+   ============================================================ */
+let timerHandle=null;
+function renderTimer(){
+  const t=state.ui.timer;
+  const m=Math.floor(t.left/60), s=t.left%60;
+  const el=$('#timerVal');
+  el.textContent=pad2(m)+':'+pad2(s);
+  el.classList.toggle('warn', t.left<=60 && t.left>0);
+  $('#timerStart').textContent = t.running?'暂停':'开始';
+}
+function toggleTimer(){
+  const t=state.ui.timer;
+  t.running=!t.running;
+  if(t.running){
+    timerHandle=setInterval(function(){
+      const tt=state.ui.timer;
+      if(!tt.running) return;
+      tt.left--;
+      if(tt.left<=0){ tt.left=0; tt.running=false; clearInterval(timerHandle); timerHandle=null; beep('up'); toast('时间到！'); }
+      renderTimer();
+    },1000);
+  }else{ clearInterval(timerHandle); timerHandle=null; }
+  renderTimer();
+}
+function setTimer(min){
+  const t=state.ui.timer;
+  t.dur=min*60; t.left=min*60; t.running=false;
+  clearInterval(timerHandle); timerHandle=null;
+  renderTimer();
+}
+
+/* ============================================================
+   16. 事件绑定
+   ============================================================ */
+function bind(){
+  /* 主题 */
+  $('#btnTheme').addEventListener('click',function(){
+    const dark=document.documentElement.getAttribute('data-theme')==='dark';
+    setTheme(dark?'light':'dark');
+  });
+  function setTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    state.settings.theme=t; save();
+    $('#themeIcon').innerHTML = t==='dark'
+      ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'
+      : '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+  }
+
+  $('#btnRoster').addEventListener('click',openRosterModal);
+  $('#btnClasses').addEventListener('click',openClassesModal);
+  $('#btnSettings').addEventListener('click',openSettingsModal);
+  $('#btnRandom').addEventListener('click',openRandomModal);
+  $('#btnAddStudent').addEventListener('click',openRosterModal);
+  $('#btnUndo').addEventListener('click',undo);
+  $('#btnRedo').addEventListener('click',redo);
+  $('#btnExportJson').addEventListener('click',exportJson);
+  $('#btnExportCsv').addEventListener('click',function(){ exportCsv(currentClass()); });
+
+  $('#classSelect').addEventListener('change',function(){ switchClass(this.value); });
+  $('#searchInput').addEventListener('input',function(){ state.ui.q=this.value; renderBoard(); });
+  $('#groupFilter').addEventListener('change',function(){ state.ui.group=this.value; renderBoard(); });
+  $('#sortSelect').addEventListener('change',function(){ state.ui.sort=this.value; renderBoard(); });
+  $('#btnStarFilter').addEventListener('click',function(){
+    state.ui.starred=!state.ui.starred;
+    this.classList.toggle('btn-primary',state.ui.starred);
+    renderBoard();
+  });
+  $('#btnMulti').addEventListener('click',function(){
+    state.ui.multi=!state.ui.multi;
+    this.classList.toggle('btn-primary',state.ui.multi);
+    if(!state.ui.multi) state.ui.selected=[];
+    render();
+  });
+
+  /* 视图切换 */
+  $('#viewSeg').addEventListener('click',function(e){
+    const b=e.target.closest('button[data-view]'); if(!b) return;
+    state.ui.view=b.dataset.view;
+    $$('#viewSeg button').forEach(x=>x.classList.toggle('on',x===b));
+    render();
+  });
+
+  /* 分值 */
+  $('#pointChips').addEventListener('click',function(e){
+    const b=e.target.closest('.point-chip'); if(!b) return;
+    if(b.id==='pointCustom'){
+      const n=promptNumber('设置快速分值：','分值',state.settings.quick);
+      if(n===null||n<=0) return;
+      state.settings.quick=n; save(); renderPoints(); toast('快速分值已设为 '+n,'ok'); return;
+    }
+    state.settings.quick=parseInt(b.dataset.p,10);
+    save(); renderPoints();
+  });
+
+  /* 榜单交互（事件委托） */
+  document.addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act, id=b.dataset.id;
+    const cls=currentClass();
+
+    if(act==='open-roster'){ openRosterModal(); return; }
+    if(act==='new-class'){ openClassesModal(); return; }
+    if(act==='clear-filter'){ state.ui.q=''; $('#searchInput').value=''; state.ui.group='all'; state.ui.starred=false; render(); return; }
+
+    if(act==='up' && id){ applyScore([id], state.settings.quick, ''); return; }
+    if(act==='down' && id){ applyScore([id], -state.settings.quick, ''); return; }
+    if(act==='edit' && id){ openStudentModal(id); return; }
+    if(act==='star' && id){ toggleStar(id); return; }
+    /* 注意：close-modal 由各弹窗自身处理，避免与文档级委托重复触发 */
+
+    if(act==='toggle-sel' && id){
+      const sel=state.ui.selected;
+      const i=sel.indexOf(id);
+      if(i>=0) sel.splice(i,1); else sel.push(id);
+      save(); render();
+      return;
+    }
+    if(act==='batch-up'){ applyScore(state.ui.selected.slice(), state.settings.quick, '批量加分'); return; }
+    if(act==='batch-down'){ applyScore(state.ui.selected.slice(), -state.settings.quick, '批量减分'); return; }
+    if(act==='batch-set'){ batchSet(); return; }
+    if(act==='batch-group'){ batchGroup(); return; }
+    if(act==='batch-move'){ batchMove(); return; }
+    if(act==='batch-star'){ batchStar(); return; }
+    if(act==='batch-del'){
+      const n=state.ui.selected.length;
+      if(confirm('删除选中的 '+n+' 名学生？')) removeStudents(state.ui.selected.slice());
+      return;
+    }
+    if(act==='batch-clear'){ state.ui.selected=[]; save(); render(); return; }
+  });
+
+  /* 表格内分数编辑 */
+  $('#tableView').addEventListener('change',function(e){
+    const inp=e.target.closest('input[data-act="set-score"]'); if(!inp) return;
+    const v=parseInt(inp.value,10); if(isNaN(v)) { renderTable(); return; }
+    setScoreTo(inp.dataset.id, v);
+  });
+
+  /* 键盘快捷键 */
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && modalStack.length){ closeModal(); return; }
+    const tag=(e.target.tagName||'').toLowerCase();
+    const typing = tag==='input'||tag==='textarea'||e.target.isContentEditable;
+    if(typing) return;
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='z'){
+      e.preventDefault();
+      if(e.shiftKey) redo(); else undo();
+      return;
+    }
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='y'){ e.preventDefault(); redo(); return; }
+    if(e.key==='+'||e.key==='='){ const c=currentClass(); if(c&&c.students.length){ applyScore([c.students[0].id], state.settings.quick,''); } return; }
+  });
+
+  /* 计时器 */
+  $('#timerStart').addEventListener('click',toggleTimer);
+  $('#timerReset').addEventListener('click',function(){ setTimer(state.ui.timer.dur/60); });
+  [5,10,25,45].forEach(function(m){
+    const b1=document.createElement('button'); b1.textContent=m+'\'';
+    b1.addEventListener('click',function(){ setTimer(m); });
+    const b2=b1.cloneNode(true); b2.addEventListener('click',function(){ setTimer(m); });
+    $('#timerPresets2').appendChild(b2);
+  });
+
+  /* 窗口关闭前落盘 */
+  window.addEventListener('beforeunload',function(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} });
+  /* 页面隐藏/关闭前立即刷新 Cookie 备份，避免防清除备份落后于最新分数 */
+  window.addEventListener('pagehide',function(){ try{ syncCookies(); }catch(e){} });
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden'){ try{ syncCookies(); }catch(e){} } });
+}
+
+/* ============================================================
+   17. 启动
+   ============================================================ */
+function boot(){
+  cookieOk = cookieSupported();
+
+  let raw=null;
+  try{ raw=localStorage.getItem(LS_KEY); }catch(e){ lsOk=false; raw=null; }
+  if(raw){
+    try{
+      const p=JSON.parse(raw);
+      state=Object.assign(defaultState(), p);
+      state.settings=Object.assign(defaultState().settings, p.settings||{});
+      state.ui=Object.assign(defaultState().ui, p.ui||{});
+      if(!Array.isArray(state.ui.selected)) state.ui.selected=[];
+      if(!Array.isArray(state.classes)) state.classes=[];
+    }catch(e){ lsOk=false; }
+  }else{
+    lsOk = lsOk && (raw===null);
+  }
+
+  const merged=mergeFromCookies();
+  if(merged.changed) save();
+
+  document.documentElement.setAttribute('data-theme', state.settings.theme==='dark'?'dark':'light');
+  $('#themeIcon').innerHTML = state.settings.theme==='dark'
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'
+    : '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+
+  $('#sortSelect').value=state.ui.sort;
+  $$('#viewSeg button').forEach(function(x){ x.classList.toggle('on', x.dataset.view===state.ui.view); });
+  $('#btnMulti').classList.toggle('btn-primary', !!state.ui.multi);
+  $('#btnStarFilter').classList.toggle('btn-primary', !!state.ui.starred);
+
+  renderTimer();
+  bind();
+  render();
+
+  if(!state.classes.length){
+    setTimeout(function(){
+      toast('欢迎使用！先「录入名单」，支持 txt / Excel 导入','ok');
+    },500);
+  }else if(merged.changed){
+    setTimeout(function(){ toast('已从 Cookie 备份恢复数据','ok'); },500);
+  }
+}
+boot();
+})();
+</script>
+</body>
+</html>
