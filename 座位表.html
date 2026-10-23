@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="sKX9mzAmhYvAFnzbxuUgEf">
+<head data-page-node-id="XBmlC24sESSdKF6wvWDzGn">
+<meta charset="UTF-8" data-page-node-id="aj31y9AeDerEH3jOGQRoih">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="T59r3OSInxJHs5RDkuZIGi">
+<title>课堂教学名单 · 自由排座</title>
+<style>
+/* ============ 基础 ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f6fb; --panel:#ffffff; --line:#e2e6ee;
+  --ink:#111827; --ink2:#4b5563; --ink3:#8b93a3;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 40px rgba(16,24,40,.18);
+  --font:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",system-ui,sans-serif;
+}
+[data-theme="indigo"]{--ac:#3730a3;--ac2:#4f46e5;--soft:#eef2ff;--line2:#c7d2fe}
+[data-theme="teal"]  {--ac:#115e59;--ac2:#0d9488;--soft:#f0fdfa;--line2:#99f6e4}
+[data-theme="rose"]  {--ac:#9f1239;--ac2:#e11d48;--soft:#fff1f2;--line2:#fecdd3}
+[data-theme="amber"] {--ac:#92400e;--ac2:#d97706;--soft:#fffbeb;--line2:#fde68a}
+[data-theme="violet"]{--ac:#5b21b6;--ac2:#7c3aed;--soft:#f5f3ff;--line2:#ddd6fe}
+[data-theme="sky"]   {--ac:#075985;--ac2:#0284c7;--soft:#f0f9ff;--line2:#bae6fd}
+[data-theme="lime"]  {--ac:#3f6212;--ac2:#65a30d;--soft:#f7fee7;--line2:#d9f99d}
+[data-theme="orange"]{--ac:#9a3412;--ac2:#ea580c;--soft:#fff7ed;--line2:#fed7aa}
+[data-theme="fuchsia"]{--ac:#86198f;--ac2:#c026d3;--soft:#fdf4ff;--line2:#f5d0fe}
+[data-theme="cyan"]  {--ac:#155e75;--ac2:#0891b2;--soft:#ecfeff;--line2:#a5f3fc}
+[data-theme="emerald"]{--ac:#065f46;--ac2:#059669;--soft:#ecfdf5;--line2:#a7f3d0}
+[data-theme="slate"] {--ac:#1e293b;--ac2:#475569;--soft:#f1f5f9;--line2:#cbd5e1}
+
+body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* ============ 侧栏 ============ */
+.sidebar{width:252px;flex:0 0 252px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:18px 16px 12px;border-bottom:1px solid var(--line)}
+.brand h1{font-size:15.5px;font-weight:800;letter-spacing:.4px;display:flex;align-items:center;gap:8px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--ac2);flex:0 0 auto}
+.brand p{font-size:11px;color:var(--ink3);margin-top:4px;letter-spacing:.2px}
+.side-tools{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;gap:7px}
+.side-tools input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-family:inherit;font-size:12.5px;background:var(--bg)}
+.side-tools input:focus{outline:none;border-color:var(--ac2);box-shadow:0 0 0 3px var(--soft)}
+.cls-list{flex:1;overflow-y:auto;padding:7px}
+.cls-list::-webkit-scrollbar{width:6px}
+.cls-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.cls-item{display:flex;align-items:center;gap:6px;width:100%;text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:8px 9px 8px 11px;margin-bottom:3px;cursor:pointer;transition:.14s;font-family:inherit}
+.cls-item:hover{background:var(--soft)}
+.cls-item.active{background:var(--soft);border-color:var(--line2);box-shadow:inset 3px 0 0 var(--ac2)}
+.cls-item .body{flex:1;min-width:0}
+.cls-item .n{font-size:12.8px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px}
+.cls-item .n span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cls-item .t{font-size:10.8px;color:var(--ink3);margin-top:2px;font-variant-numeric:tabular-nums}
+.cls-item .swatch{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.cls-item .pin{font-size:12px;color:var(--ink3);opacity:.35;padding:2px 3px;border-radius:4px;flex:0 0 auto;line-height:1}
+.cls-item .pin:hover{opacity:1;background:var(--soft)}
+.cls-item .pin.on{opacity:1;color:#d97706}
+.side-foot{padding:9px 14px;border-top:1px solid var(--line);display:flex;gap:7px}
+.save-state{padding:7px 14px 12px;font-size:10.5px;color:var(--ink3);line-height:1.5;border-top:1px solid var(--line);background:#fafbfd}
+.save-state b{color:var(--ac);font-weight:700}
+.save-state .dot2{display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:4px;vertical-align:middle}
+
+/* ============ 主区 ============ */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:30}
+.topbar h2{font-size:18px;font-weight:800;letter-spacing:.3px}
+.topbar .meta{font-size:11.5px;color:var(--ink2);margin-top:4px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tag{background:var(--soft);color:var(--ac);border:1px solid var(--line2);padding:2px 9px;border-radius:20px;font-size:10.8px;font-weight:600}
+.tag.warn{background:#fffbeb;color:#92400e;border-color:#fde68a}
+.spacer{flex:1}
+.nav{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:2px;background:var(--bg)}
+.nav button{border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink2);cursor:pointer;padding:3px 7px;border-radius:6px;line-height:1}
+.nav button:hover{background:var(--panel);color:var(--ac)}
+.nav select{border:none;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink);padding:3px 2px;max-width:190px;cursor:pointer;outline:none}
+.tools{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink2);font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:9px;cursor:pointer;transition:.14s;white-space:nowrap}
+.btn:hover{border-color:var(--ac2);color:var(--ac)}
+.btn.primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.btn.primary:hover{background:var(--ac2);border-color:var(--ac2);color:#fff}
+.btn.tiny{padding:4px 9px;font-size:11.5px}
+.btn.danger:hover{border-color:#dc2626;color:#dc2626}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:none;background:var(--panel);font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink3);padding:7px 13px;cursor:pointer;transition:.14s}
+.seg button.on{background:var(--ac);color:#fff}
+
+.content{padding:22px 24px 60px;flex:1}
+
+/* ============ 讲台 ============ */
+.podium{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;border-radius:var(--radius);padding:12px;text-align:center;max-width:1180px;margin:0 auto 24px;box-shadow:var(--shadow)}
+.podium .t{font-size:13.5px;font-weight:800;letter-spacing:6px;text-indent:6px}
+.podium .s{font-size:10.5px;opacity:.85;margin-top:2px;letter-spacing:1px}
+
+/* ============ 分组 ============ */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1180px;margin:0 auto}
+.group{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.group-head{padding:10px 13px;display:flex;align-items:center;gap:9px;border-bottom:2px solid var(--ac2)}
+.group-head .badge{width:24px;height:24px;border-radius:7px;background:var(--ac);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;flex:0 0 auto}
+.group-head .name{font-size:13px;font-weight:800;color:var(--ink);outline:none;border-radius:4px;padding:1px 4px}
+.group-head .name:focus{background:var(--soft);box-shadow:0 0 0 2px var(--line2)}
+.group-head .cnt{margin-left:auto;font-size:10.8px;color:var(--ink3);font-weight:600}
+.seats{padding:11px;display:flex;flex-direction:column;gap:9px;flex:1}
+.seat{position:relative;border:2px dashed var(--line2);border-radius:11px;min-height:64px;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--soft);transition:.14s;cursor:pointer;padding:9px}
+.seat .no{position:absolute;top:5px;left:8px;font-size:10px;font-weight:800;color:var(--ink3);letter-spacing:.5px}
+.seat.filled{border-style:solid;background:var(--panel);border-color:var(--line2);box-shadow:0 1px 3px rgba(16,24,40,.05)}
+.seat .empty{font-size:11px;color:var(--ink3);font-weight:600}
+.seat.dropok{border-color:var(--ac2);background:var(--soft);transform:scale(1.03);box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.seat.swap{border-color:var(--ac2);background:#fff}
+
+/* ============ 学生卡 ============ */
+.chip{width:100%;border:1px solid var(--line2);border-left:4px solid var(--ac2);border-radius:9px;background:var(--panel);padding:8px 10px;cursor:grab;user-select:none;touch-action:none;transition:box-shadow .14s;font-family:inherit}
+.chip:hover{box-shadow:0 3px 12px rgba(16,24,40,.12)}
+.chip:active{cursor:grabbing}
+.chip .nm{font-size:14.5px;font-weight:700;color:var(--ink);letter-spacing:.5px;line-height:1.25}
+.chip .mt{font-size:9.8px;color:var(--ink3);margin-top:2px;letter-spacing:.3px}
+.chip.ghost{position:fixed;z-index:999;pointer-events:none;box-shadow:var(--shadow-lg);transform:rotate(-2.5deg) scale(1.05);width:auto;opacity:.96}
+.chip.dragging{opacity:.28}
+
+/* ============ 待排座 ============ */
+.pool{margin-top:20px;max-width:1180px;margin-left:auto;margin-right:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.pool-head{padding:10px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:var(--soft)}
+.pool-head h4{font-size:12.5px;font-weight:800;color:var(--ac);letter-spacing:.5px}
+.pool-head .hint{font-size:10.8px;color:var(--ink3);margin-left:auto}
+.pool-body{padding:13px 15px;display:flex;flex-wrap:wrap;gap:8px;min-height:62px}
+.pool.dropok{outline:2px dashed var(--ac2);outline-offset:-6px;background:var(--soft)}
+.pool-body .chip{width:auto;min-width:86px}
+.pool-empty{font-size:12px;color:var(--ink3);font-weight:600;padding:6px 2px}
+
+/* ============ 名单 ============ */
+.roster{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;max-width:920px;margin:0 auto}
+.roster table{width:100%;border-collapse:collapse}
+.roster th{background:var(--ac);color:#fff;font-size:11.5px;font-weight:700;padding:11px 12px;text-align:left;letter-spacing:1px}
+.roster td{padding:9px 12px;font-size:13.5px;border-bottom:1px solid var(--line);color:var(--ink)}
+.roster tr:nth-child(even) td{background:#fafbfd}
+.roster td.idx{color:var(--ink3);font-weight:700;font-variant-numeric:tabular-nums;width:54px}
+.roster td.nm{font-weight:700;letter-spacing:.5px}
+.roster td.gp{color:var(--ac);font-weight:700}
+.roster td.st{color:var(--ink3);font-size:12px}
+.roster td.rm input{border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-family:inherit;font-size:12.5px;width:100%;background:var(--panel)}
+.roster td.rm input:focus{outline:none;border-color:var(--ac2);box-shadow:0 0 0 3px var(--soft)}
+.roster-note{font-size:11px;color:var(--ink3);padding:10px 15px;background:#fafbfd;border-top:1px solid var(--line)}
+
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,14px);background:#111827;color:#fff;padding:10px 20px;border-radius:10px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.22s;z-index:900}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.themer{display:flex;gap:5px;align-items:center}
+.themer .sw{width:19px;height:19px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:.14s}
+.themer .sw:hover{transform:scale(1.18)}
+.themer .sw.on{border-color:var(--ink)}
+
+/* ============ 启动台 ============ */
+.overlay{position:fixed;inset:0;background:rgba(17,24,39,.55);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:26px;overflow:auto}
+.overlay.hide{display:none}
+.launcher{width:100%;max-width:1020px;background:var(--panel);border-radius:18px;box-shadow:var(--shadow-lg);overflow:hidden;max-height:88vh;display:flex;flex-direction:column}
+.lc-head{padding:24px 26px 18px;border-bottom:1px solid var(--line)}
+.lc-head h2{font-size:21px;font-weight:800;letter-spacing:.4px}
+.lc-head p{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.lc-bar{display:flex;gap:9px;margin-top:15px;flex-wrap:wrap;align-items:center}
+.lc-bar input{flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-family:inherit;font-size:13px}
+.lc-bar input:focus{outline:none;border-color:var(--ac2);box-shadow:0 0 0 3px var(--soft)}
+.lc-grid{padding:18px 22px 22px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+.lc-card{border:1px solid var(--line);border-radius:12px;padding:13px;cursor:pointer;transition:.15s;background:var(--panel);text-align:left;font-family:inherit;position:relative;overflow:hidden}
+.lc-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--ac2)}
+.lc-card .bar{position:absolute;left:0;top:0;bottom:0;width:4px}
+.lc-card h3{font-size:13.5px;font-weight:800;color:var(--ink);line-height:1.35;margin-left:7px}
+.lc-card .tm{font-size:11px;color:var(--ink3);margin-top:5px;margin-left:7px}
+.lc-card .mt2{display:flex;align-items:center;gap:6px;margin-top:9px;margin-left:7px}
+.lc-card .mini{height:6px;flex:1;background:var(--line);border-radius:3px;overflow:hidden}
+.lc-card .mini i{display:block;height:100%;border-radius:3px}
+.lc-card .pct{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+.lc-card .badge2{position:absolute;right:9px;top:9px;font-size:9.5px;font-weight:700;background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:1px 6px;border-radius:20px}
+.lc-empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--ink3);font-size:13px;font-weight:600}
+
+/* ============ 弹窗 ============ */
+.modal-box{width:100%;max-width:560px;background:var(--panel);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+.modal-box h3{font-size:16px;font-weight:800;padding:18px 20px 0;letter-spacing:.3px}
+.modal-body{padding:14px 20px 4px;display:flex;flex-direction:column;gap:12px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--ink2);margin-bottom:5px}
+.field input[type=text],.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-family:inherit;font-size:13px;background:var(--bg)}
+.field textarea{min-height:190px;resize:vertical;line-height:1.75;font-size:13px}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--ac2);box-shadow:0 0 0 3px var(--soft)}
+.field .hint{font-size:10.8px;color:var(--ink3);margin-top:5px}
+.pickrow{display:flex;gap:6px;flex-wrap:wrap}
+.pickrow .sw2{width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent}
+.pickrow .sw2.on{border-color:var(--ink)}
+.modal-foot{padding:14px 20px 18px;display:flex;gap:9px;justify-content:flex-end}
+.modal-foot .btn{padding:8px 17px;font-size:13px}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:11.5px;padding:9px 12px;border-radius:9px;line-height:1.6}
+
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){.sidebar{display:none}.grid{grid-template-columns:1fr}.content{padding:16px 12px 50px}.topbar{padding:12px 14px}}
+@media print{
+  .sidebar,.tools,.themer,.nav,.overlay,.toast{display:none!important}
+  body{background:#fff}.content{padding:0}.topbar{position:static;border:none;padding:0 0 12px}
+  .podium,.group,.roster,.pool,.chip{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .chip.ghost{display:none}
+}
+</style>
+</head>
+<body data-page-node-id="NbrDaz32Bg2p3odlF9TU4T">
+<div class="app" data-page-node-id="9ZBsunpiNL9fCxITg6fuSH">
+  <aside class="sidebar" data-page-node-id="4zWevvvXZgaetEMPo0wNnt">
+    <div class="brand" data-page-node-id="s2OwVBDmgSSb8iKHJF9s5y">
+      <h1 data-page-node-id="lB79ioqzwxUhVO3sCnL8M9"><span class="dot" data-page-node-id="c7ByDNDNpqVYlM10Lxgh1S"></span>课堂教学名单</h1>
+      <p data-page-node-id="CpmpDPP41xDYqwdKikinvP">4 组 × 3 人 · 自由排座</p>
+    </div>
+    <div class="side-tools" data-page-node-id="I6KXLSEewy4BnJuVAaRjR8">
+      <input id="sideSearch" placeholder="搜索班级 / 时间 / 姓名" oninput="filterSide(this.value)" data-page-node-id="hWYkQJoYN82kQ4GNphqSG9">
+      <button class="btn tiny" onclick="openNew()" data-page-node-id="7sNHOi5YhgEcHDCfwlIFqX">＋</button>
+    </div>
+    <div class="cls-list" id="clsList" data-page-node-id="XoJEsNEVcczkFaQvAEEvZo"></div>
+    <div class="side-foot" data-page-node-id="F3QmOGnobp2EP4RHbAqxmc">
+      <button class="btn tiny" style="flex:1" onclick="openLauncher()" data-page-node-id="CGF9t47iJKkSzlMLTYmW3r">全部班级</button>
+      <button class="btn tiny" onclick="openNew()" data-page-node-id="TnQetPILsd7dXn02rAFO3n">新建班级</button>
+    </div>
+    <div class="save-state" id="saveState"></div>
+  </aside>
+
+  <main class="main" data-page-node-id="kSWPbtjLuOc2wj8YaxBzzD">
+    <div class="topbar" data-page-node-id="8n6FtC4cRUMvUROz3HjKoJ">
+      <div style="min-width:0" data-page-node-id="wRusLXtW9zdLcykZ3nJ0Cc">
+        <h2 id="clsName" data-page-node-id="L0AFsVZOS6GR1e47hw2gyv">—</h2>
+        <div class="meta" data-page-node-id="VpBGrGakDJHHnB7KoaGgNk">
+          <span class="tag" id="clsTime" data-page-node-id="Ss0SZwb9aUb46GgRFjVQqy">—</span>
+          <span id="clsCount" data-page-node-id="z0Nl4brUzFFeDxFd2h7dTN">—</span>
+          <div class="themer" id="themer" data-page-node-id="U3JeAWMsVp6X6nhofiYNoQ"></div>
+        </div>
+      </div>
+      <div class="spacer" data-page-node-id="jpin7coB1ephXkHlAun1nD"></div>
+      <div class="nav" data-page-node-id="pEQPGX0bIkmwnlwLlnTbOr">
+        <button onclick="step(-1)" title="上一个班" data-page-node-id="HoT0JURLZXRRzvPHQDdBPD">‹</button>
+        <select id="clsSel" onchange="pick(this.value)" data-page-node-id="RLFf1pwmSdck6GmfqJhEwv"></select>
+        <button onclick="step(1)" title="下一个班" data-page-node-id="9L2dfYyihesjgkJUjW1qor">›</button>
+      </div>
+      <div class="tools" data-page-node-id="AIRWNGv0bGpjtVizGquYRf">
+        <div class="seg" data-page-node-id="0qlQQ4AGE9n38cAYKVupLD">
+          <button id="vSeat" class="on" onclick="setView('seat')" data-page-node-id="L2tXUCNJk60vXDaJpEyueU">座位视图</button>
+          <button id="vRoster" onclick="setView('roster')" data-page-node-id="nOxXm3xDE6r1r23xqQm6go">名单视图</button>
+        </div>
+        <button class="btn" onclick="openEdit()" data-page-node-id="cwq0W3wnitwMYiNdqAF6o1">编辑名单</button>
+        <button class="btn" onclick="autoArrange()" data-page-node-id="3WczM0cmkeH2lLpUbhF7QA">一键排座</button>
+        <button class="btn" onclick="resetClass()" data-page-node-id="jxE7ytGh1DhzdbGYE73oRp">复位</button>
+        <button class="btn" onclick="exportText()" data-page-node-id="c2VD4gTszhJnLjt8HWPy3P">导出</button>
+        <button class="btn" onclick="doBackup()" title="把当前所有排座存成本地备份文件">备份</button>
+        <button class="btn" onclick="doRestore()" title="从备份文件恢复名单与排座">恢复</button>
+        <button class="btn primary" onclick="window.print()" data-page-node-id="ItAKRWCuhdNm02g2QEdV01">打印 / PDF</button>
+      </div>
+    </div>
+    <div class="content" data-page-node-id="E6ZzVqBknKOYrpKlH19PVA">
+      <div id="seatView" data-page-node-id="CQHstKwfwzoLq1BGudn76y">
+        <div class="podium" data-page-node-id="kyXPiPExl2fusUvXwuw2kA"><div class="t" data-page-node-id="ardA4vsnS6SZfRS5DqCbmH">讲　台</div><div class="s" data-page-node-id="hy7n8MFcA7IkMvAjFAvajc">BLACKBOARD</div></div>
+        <div class="grid" id="grid" data-page-node-id="0to5KNXOgP7ZMMvz98eB5j"></div>
+        <div class="pool" id="pool" data-page-node-id="aIo7rIiS2y1UbqHguU6uPF">
+          <div class="pool-head" data-page-node-id="oEoeJWDxLkR4u06LUA8mF5"><h4 data-page-node-id="6pXnU2OUKeYEtZDvuwO5At">待 排 座 区</h4><span class="hint" data-page-node-id="D8YZTOjXKsodP1rtKL3tKk">拖入座位 · 拖回此处撤回</span></div>
+          <div class="pool-body" id="poolBody" data-page-node-id="TkpqLsMTdF8FYFPrcSP6MH"></div>
+        </div>
+      </div>
+      <div id="rosterView" style="display:none" data-page-node-id="PWbiIWwZFRyBjxebjfU1Mq"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 启动台 -->
+<div class="overlay" id="launcher" data-page-node-id="XbcFHHnv26FWRmVPqDd4GT">
+  <div class="launcher" data-page-node-id="DuA2KgwXyyMHKmqRtnZrvB">
+    <div class="lc-head" data-page-node-id="NLIPFnpPxtCP5YBBOsM5oF">
+      <h2 data-page-node-id="YeRVelpFUdo5g0hGJbkM18">选择要排座的班级</h2>
+      <p data-page-node-id="41aDUxKwPWpn2MlWT0XAZl">共 <b id="lcCount" data-page-node-id="U8PMvuIYqDpsJEsDQEYerK">0</b> 个班级 · 点任意卡片直接进入，排座进度自动保存</p>
+      <div class="lc-bar" data-page-node-id="K0PkRIfuvnSfwhO3SCKptO">
+        <input id="lcSearch" placeholder="搜索班级名 / 上课时间 / 学生姓名…" oninput="renderLauncher()" data-page-node-id="cUvJLC7vQ97Pn55VHVO2Fn">
+        <button class="btn primary" id="lcResume" onclick="resumeLast()" data-page-node-id="CMzmNfGh0WHTV1A8UAZcxi">继续上次排座</button>
+        <button class="btn" onclick="openNew()" data-page-node-id="0BRtcxtosmodoFqRBgO2Jp">＋ 新建班级</button>
+      </div>
+    </div>
+    <div class="lc-grid" id="lcGrid" data-page-node-id="WTgXIdEimo2KMszwkV2l5t"></div>
+  </div>
+</div>
+
+<!-- 通用弹窗 -->
+<div class="overlay hide" id="modal" data-page-node-id="Riyx379ukO78zZOdZFJqIG">
+  <div class="modal-box" data-page-node-id="ew9Nx4iF53gDL6SisFeDAQ">
+    <h3 id="mTitle" data-page-node-id="a05yMCeA8OhIbjbzUpZcvM">标题</h3>
+    <div class="modal-body" id="mBody" data-page-node-id="H8C41cJbbjoBkdxOeUWxiT"></div>
+    <div class="modal-foot" data-page-node-id="Yiu5PBKRK72Cgww2VgpF2g">
+      <button class="btn" onclick="closeModal()" data-page-node-id="RfvSt9CEbJjui0lYGUWOHA">取消</button>
+      <button class="btn primary" id="mOk" data-page-node-id="vUYU3umd4DDLAWi0i3kR3v">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" data-page-node-id="gMWFSQBzlb6ZJ9q3qA07Ny"></div>
+
+<script>
+/* ==================== 班级数据 ==================== */
+const RAW = [
+ {id:'c01',name:'思维训练课 · 周日14点',time:'周日 14:00-15:30',theme:'indigo',
+  students:['方子阳','江尚玥','钱泽萱','徐传恒','杨善茜','王科钧'],note:'已合并原表「周日思维训练」重复名单'},
+ {id:'c02',name:'周日10点10 启蒙班',time:'周日 10:10-11:40',theme:'teal',
+  students:['白恩彤','梅雯悦','陈兆东','刘俊杰','宋一诺','耿佳茜']},
+ {id:'c03',name:'周六8点30 班',time:'周六 08:30-10:00',theme:'rose',
+  students:['张海萌','段恩泽','段润泽','林若溪','吴昊轩','鞠忻航','黄梓昊','方子阳','刘一潮']},
+ {id:'c04',name:'周六10点30 班',time:'周六 10:30-12:00',theme:'amber',
+  students:['刘梓潇','范思成','徐筱兮','姚泽铄','孙韩静雅','尹奕心','李芊月','何沐轩','马启童']},
+ {id:'c05',name:'周六14点 班',time:'周六 14:00-15:30',theme:'violet',
+  students:['邱子轩','卫芓嫣','陈瑞茵','胡馨玥','李雨珊','王禹轩','丁逸凡','孙悦童','郭梓晨','朱传鸿']},
+ {id:'c06',name:'周五19点 班',time:'周五 18:40-20:10',theme:'sky',
+  students:['钱泽萱','江尚玥','徐传恒','魏妙涵','赵亿心','陈奕凡','王科钧','方子阳','赵子萱','黄梓皓','吴昊轩']},
+ {id:'c07',name:'周四18点20 班',time:'周四 18:30-20:00',theme:'lime',
+  students:['沈心悦','杨清玥','黄邵曦','马菁婕','马菁晗','朱子阳','孙婉萌']},
+ {id:'c08',name:'周六16点整 班',time:'原表内标注「周一 17:10-18:40」',theme:'emerald',
+  students:['陈秋妤','王一诺','屠莜苒','宴依朵','马启童'],note:'子表名与表内时间不一致，已保留双标注，请核对'},
+ {id:'c09',name:'周二18点30 班',time:'周二 18:30-20:00',theme:'orange',
+  students:['束翰宸','张婧熙','魏卿','夏海睿','王文瑄','黄瑾瑜','沈奕一','刘雨橙','徐若汐','童琳芸','陈彦喆']},
+ {id:'c10',name:'周一17点10分 班',time:'周一 17:10-18:40',theme:'fuchsia',
+  students:['李芃翰','孙韩静雅','尹奕心','李芊月','何沐轩','徐奕晟','陈胡茉萱','刘亦然']},
+ {id:'c11',name:'周三18点30 班',time:'周三 18:00-19:30',theme:'cyan',
+  students:['周欣怡','朱雨晨','顾筱','沈欣然','刘毓璋','李诗语','陆宥辰','王奕凡','凌笑笑','万紫千','张逸凡','陈午言']},
+ {id:'c12',name:'周六16点 班',time:'周六 16:00-17:30',theme:'teal',
+  students:['陈秋妤','屠莜苒','王一诺','杨浠妍','孙远航'],note:'原表上下两段名单完全相同，已去重'},
+ {id:'c13',name:'周二班',time:'周二 18:30-20:00',theme:'rose',
+  students:['郭梓晨','李唐瑞','束翰宸','王文瑄','魏卿','夏海睿','张婧熙','张逸凡','张育良','朱传鸿']},
+ {id:'c14',name:'周五17点 启蒙班',time:'周五 17:00-18:30',theme:'amber',
+  students:['胡潇冉','朱家莹','关瑾瑜','胡应晞']},
+ {id:'c15',name:'周六18点半 启蒙班',time:'周六 18:30-20:00',theme:'violet',
+  students:['钱玥同','魏澜','黄泰宇','郭语汐','代振洲','马芮溪','徐传鑫','吴沐子','韩旭','李敦敏','李沐晗'],
+  note:'已并入「周二18点30 (2)」子表中的 3 名重复学生'},
+ {id:'c16',name:'周日16点 班',time:'周日 16:00-17:30',theme:'sky',
+  students:['李沐晗','马志雲','马芮溪','韩旭','张崇曜','孙婉婷','李敦敏','方启航','李钰周','梁雨末','刘梦湲','王子城']}
+];
+const THEMES=[['indigo','#4f46e5'],['teal','#0d9488'],['rose','#e11d48'],['amber','#d97706'],
+  ['violet','#7c3aed'],['sky','#0284c7'],['lime','#65a30d'],['orange','#ea580c'],
+  ['fuchsia','#c026d3'],['cyan','#0891b2'],['emerald','#059669'],['slate','#475569']];
+const THEME_MAP=Object.fromEntries(THEMES);
+const themeColor=k=>THEME_MAP[k]||THEME_MAP.indigo;
+const SLOTS=12, PER=3, GROUPS=4;
+const LS='seatchart-hx-v2';
+
+/* ==================== 状态 ==================== */
+let data=load();
+let cur=null, view='seat', drag=null, mOkFn=null;
+
+function defaultSeats(students){
+  const s=Array(SLOTS).fill(null);
+  const order=[...new Set(students)];
+  const buckets=[[],[],[],[]];
+  order.forEach((n,i)=>{ if(buckets[i%4].length<PER) buckets[i%4].push(n); });
+  let k=0; buckets.forEach(b=>b.forEach(n=>{ s[k++]=n; }));
+  return s;
+}
+function build(){
+  const st=data.classes||{}, cus=data.custom||{}, del=data.deleted||[], pins=data.pins||[];
+  let list=RAW.filter(c=>!del.includes(c.id)).map(c=>{
+    const r=st[c.id]||{};
+    return {
+      id:c.id,name:r.name||c.name,time:r.time||c.time,note:c.note||'',
+      students:Array.isArray(r.students)&&r.students.length?r.students:c.students,
+      theme:THEME_MAP[r.theme||c.theme]?(r.theme||c.theme):'indigo',
+      groups:r.groups||['第1组','第2组','第3组','第4组'],
+      seats:Array.isArray(r.seats)&&r.seats.length===SLOTS?r.seats:defaultSeats(r.students||c.students),
+      remarks:r.remarks||{},custom:false
+    };
+  });
+  Object.keys(cus).forEach(id=>{
+    const c=cus[id];
+    list.push({id,name:c.name,time:c.time||'',note:'自建班级',students:c.students||[],
+      theme:THEME_MAP[c.theme]?c.theme:'slate',groups:c.groups||['第1组','第2组','第3组','第4组'],
+      seats:c.seats&&c.seats.length===SLOTS?c.seats:defaultSeats(c.students||[]),remarks:c.remarks||{},custom:true});
+  });
+  const ord=data.order||[];
+  list.sort((a,b)=>{const ia=ord.indexOf(a.id),ib=ord.indexOf(b.id);return (ia<0?9e9:ia)-(ib<0?9e9:ib);});
+  if(pins.length) list.sort((a,b)=>(pins.includes(b.id)?1:0)-(pins.includes(a.id)?1:0));
+  return list;
+}
+function load(){
+  try{const o=JSON.parse(localStorage.getItem(LS));
+    if(o&&o.classes)return Object.assign({custom:{},deleted:[],pins:[],order:[],started:false},o);
+  }catch(e){}
+  return {custom:{},deleted:[],pins:[],order:[],classes:{},cur:null,started:false};
+}
+function save(){
+  data.classes=data.classes||{};
+  const c=cls();
+  if(c) data.classes[c.id]={name:c.name,time:c.time,theme:c.theme,groups:c.groups,seats:c.seats,remarks:c.remarks,students:c.students};
+  data.cur=cur;
+  try{
+    localStorage.setItem(LS,JSON.stringify(data));
+    data.savedAt=new Date().toISOString();
+    paintSaveState(true);
+  }catch(e){
+    paintSaveState(false);
+    if(!data._warned){data._warned=true;toast('浏览器存储不可用，请点「备份」导出文件保存');}
+  }
+}
+/* 侧栏底部：始终显示"数据存在哪、存了没有" */
+function paintSaveState(ok){
+  const el=document.getElementById('saveState'); if(!el)return;
+  const isFile=location.protocol==='file:';
+  const t=data.savedAt?new Date(data.savedAt).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'—';
+  el.innerHTML=ok
+    ? `<span class="dot2"></span>已自动保存 <b>${t}</b><br>${isFile
+        ? '⚠️ 当前是本地文件模式，数据按「浏览器+文件路径」隔离。<br>换浏览器或移动文件会读不到，建议点<b>备份</b>导出。'
+        : '⚠️ 当前是预览模式，与桌面文件存储不互通。<br>请双击桌面 HTML 打开，修改点<b>备份</b>导出。'}`
+    : `<span style="color:#dc2626">●</span> <b style="color:#dc2626">保存失败</b><br>请点「备份」导出文件保存。`;
+}
+const cls=()=>data.list.find(c=>c.id===cur);
+const poolOf=c=>c.students.filter(n=>!c.seats.includes(n));
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+/* ==================== 渲染 ==================== */
+function renderSidebar(){
+  const q=(document.getElementById('sideSearch').value||'').trim().toLowerCase();
+  const pins=data.pins||[];
+  const rows=data.list.filter(c=>{
+    if(!q)return true;
+    return (c.name+' '+c.time+' '+c.students.join('')).toLowerCase().includes(q);
+  });
+  document.getElementById('clsList').innerHTML=rows.map(c=>{
+    const seated=c.seats.filter(Boolean).length;
+    const t=(c.time||'').split('·')[0].trim();
+    const on=pins.includes(c.id);
+    return `<div class="cls-item${c.id===cur?' active':''}" data-theme="${c.theme}" onclick="pick('${c.id}')">
+      <span class="swatch" style="background:${themeColor(c.theme)}"></span>
+      <div class="body"><div class="n"><span class="t">${esc(c.name)}</span></div>
+      <div class="t">${esc(t)} · ${seated}/${c.students.length} 已排</div></div>
+      <span class="pin${on?' on':''}" title="置顶" onclick="event.stopPropagation();togglePin('${c.id}')">${on?'★':'☆'}</span>
+    </div>`;
+  }).join('')||'<div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">无匹配班级</div>';
+}
+function renderSel(){
+  document.getElementById('clsSel').innerHTML=data.list.map(c=>
+    `<option value="${c.id}"${c.id===cur?' selected':''}>${esc(c.name)}</option>`).join('');
+}
+function renderHeader(){
+  const c=cls(); if(!c)return;
+  document.getElementById('clsName').textContent=c.name;
+  document.getElementById('clsTime').textContent=c.time||'未设置时间';
+  const warn=c.note?' <span class="tag warn">'+esc(c.note)+'</span>':'';
+  document.getElementById('clsCount').innerHTML=
+    `${c.students.length} 名学生 · 4 组 × 3 人 · <b>${c.seats.filter(Boolean).length}</b> 人已就座`+warn;
+  document.getElementById('themer').innerHTML=THEMES.map(([k,v])=>
+    `<span class="sw${k===c.theme?' on':''}" style="background:${v}" title="${k}" onclick="setTheme('${k}')"></span>`).join('');
+}
+function renderSeats(){
+  const c=cls(); if(!c)return;
+  let h='';
+  for(let g=0;g<GROUPS;g++){
+    h+=`<div class="group"><div class="group-head">
+      <div class="badge">${g+1}</div>
+      <div class="name" contenteditable="true" onblur="renameGroup(${g},this.textContent)">${esc(c.groups[g]||'第'+(g+1)+'组')}</div>
+      <div class="cnt">${c.seats.slice(g*PER,g*PER+PER).filter(Boolean).length}/3</div>
+    </div><div class="seats">`;
+    for(let j=0;j<PER;j++){
+      const i=g*PER+j, nm=c.seats[i];
+      h+=`<div class="seat${nm?' filled':''}" data-seat="${i}">
+        <span class="no">${i+1}</span>
+        ${nm?`<div class="chip" data-from="seat" data-idx="${i}" data-name="${esc(nm)}"><div class="nm">${esc(nm)}</div><div class="mt">${esc(c.groups[g])} · ${i-g*PER+1}号</div></div>`
+             :`<div class="empty">空位 · 拖入</div>`}
+      </div>`;
+    }
+    h+=`</div></div>`;
+  }
+  document.getElementById('grid').innerHTML=h;
+}
+function renderPool(){
+  const c=cls(); if(!c)return;
+  const p=poolOf(c);
+  document.getElementById('poolBody').innerHTML = p.length
+    ? p.map(n=>`<div class="chip" data-from="pool" data-name="${esc(n)}"><div class="nm">${esc(n)}</div><div class="mt">待排座</div></div>`).join('')
+    : `<div class="pool-empty">✓ 全部学生已安排座位</div>`;
+}
+function renderRoster(){
+  const c=cls(); if(!c)return;
+  let rows='';
+  c.seats.forEach((nm,i)=>{
+    if(!nm)return;
+    const g=Math.floor(i/PER);
+    rows+=`<tr><td class="idx">${i+1}</td><td class="nm">${esc(nm)}</td>
+      <td class="gp">${esc(c.groups[g]||'第'+(g+1)+'组')}</td><td class="st">${i-g*PER+1} 号</td>
+      <td class="rm"><input placeholder="备注" value="${(c.remarks[nm]||'').replace(/"/g,'&quot;')}" oninput="setRemark('${nm}',this.value)"></td></tr>`;
+  });
+  const p=poolOf(c);
+  p.forEach(nm=>{
+    rows+=`<tr><td class="idx">—</td><td class="nm" style="color:var(--ink3)">${esc(nm)}</td><td class="st">待排座</td><td class="st">—</td>
+      <td class="rm"><input placeholder="备注" value="${(c.remarks[nm]||'').replace(/"/g,'&quot;')}" oninput="setRemark('${nm}',this.value)"></td></tr>`;
+  });
+  document.getElementById('rosterView').innerHTML=`
+    <div class="roster"><table>
+      <thead><tr><th>座号</th><th>姓名</th><th>组别</th><th>组内座位</th><th>课堂备注</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--ink3)">暂无学生</td></tr>'}</tbody>
+    </table>
+    <div class="roster-note">${esc(c.name)}${c.time?' · '+esc(c.time):''} ｜ 在座 ${c.seats.filter(Boolean).length} 人 · 待排 ${p.length} 人 ｜ 备注随排座自动保存</div>
+    </div>`;
+}
+function render(){
+  const c=cls();
+  document.documentElement.setAttribute('data-theme',c?c.theme:'indigo');
+  renderSidebar();renderSel();renderHeader();renderSeats();renderPool();renderRoster();paintSaveState(!!data.savedAt);
+  document.getElementById('vSeat').classList.toggle('on',view==='seat');
+  document.getElementById('vRoster').classList.toggle('on',view==='roster');
+  document.getElementById('seatView').style.display=view==='seat'?'':'none';
+  document.getElementById('rosterView').style.display=view==='roster'?'':'none';
+}
+
+/* ==================== 启动台 ==================== */
+function openLauncher(){ renderLauncher(); document.getElementById('launcher').classList.remove('hide'); }
+function closeLauncher(){ document.getElementById('launcher').classList.add('hide'); }
+function renderLauncher(){
+  const q=(document.getElementById('lcSearch').value||'').trim().toLowerCase();
+  const pins=data.pins||[];
+  const rows=data.list.filter(c=>!q||(c.name+' '+c.time+' '+c.students.join('')).toLowerCase().includes(q));
+  document.getElementById('lcCount').textContent=data.list.length;
+  document.getElementById('lcGrid').innerHTML=rows.map(c=>{
+    const seated=c.seats.filter(Boolean).length, pct=Math.round(seated/SLOTS*100);
+    const col=themeColor(c.theme);
+    return `<button class="lc-card" onclick="enter('${c.id}')">
+      <span class="bar" style="background:${col}"></span>
+      ${pins.includes(c.id)?'<span class="badge2">置顶</span>':''}
+      <h3>${esc(c.name)}</h3>
+      <div class="tm">${esc(c.time||'未设置时间')}</div>
+      <div class="mt2"><span class="mini"><i style="width:${pct}%;background:${col}"></i></span>
+      <span class="pct">${seated}/${c.students.length}</span></div>
+    </button>`;
+  }).join('')||'<div class="lc-empty">没有匹配的班级</div>';
+  const last=data.list.find(c=>c.id===data.cur);
+  const rb=document.getElementById('lcResume');
+  rb.style.display=last?'':'none';
+  rb.textContent=last?`继续上次：${last.name}`:'';
+}
+function enter(id){
+  if(!data.list.some(c=>c.id===id))return;
+  cur=id;view='seat';data.started=true;save();closeLauncher();render();
+}
+function resumeLast(){
+  const last=data.list.find(c=>c.id===data.cur);
+  if(last){closeLauncher();pick(last.id);}
+}
+
+/* ==================== 交互 ==================== */
+function pick(id){
+  if(!data.list.some(c=>c.id===id))return;
+  cur=id;save();render();
+}
+function step(d){
+  const l=data.list; if(!l.length)return;
+  let i=l.findIndex(c=>c.id===cur);
+  i=(i+d+l.length)%l.length;
+  pick(l[i].id);
+}
+function togglePin(id){
+  data.pins=data.pins||[];
+  const i=data.pins.indexOf(id);
+  i>=0?data.pins.splice(i,1):data.pins.push(id);
+  save();render();renderLauncher();
+  toast(i>=0?'已取消置顶':'已置顶到列表顶部');
+}
+function filterSide(){ renderSidebar(); }
+function setTheme(k){ if(!THEME_MAP[k]||!cls())return; cls().theme=k;save();render();toast('已更换配色'); }
+function setView(v){view=v;render();}
+function renameGroup(g,t){
+  const c=cls(); if(!c)return;
+  c.groups[g]=(t||'').trim()||('第'+(g+1)+'组'); save(); renderSeats(); renderRoster(); renderSidebar();
+}
+function setRemark(n,v){ if(cls())cls().remarks[n]=v; save(); }
+function resetClass(){ const c=cls(); if(!c)return; c.seats=defaultSeats(c.students);save();render();toast('已复位为初始排座'); }
+function autoArrange(){
+  const c=cls(); if(!c)return;
+  const a=[...new Set(c.students)];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  const s=Array(SLOTS).fill(null);
+  a.slice(0,SLOTS).forEach((n,i)=>s[i]=n);
+  c.seats=s;save();render();toast('已随机重新排座');
+}
+function exportText(){
+  const c=cls(); if(!c)return;
+  let out=`【${c.name}】  ${c.time}\n`;
+  for(let g=0;g<GROUPS;g++){
+    const row=c.seats.slice(g*PER,g*PER+PER).map((n,j)=>`${j+1}号 ${n||'（空）'}`);
+    out+=`${c.groups[g]||'第'+(g+1)+'组'}：${row.join('  |  ')}\n`;
+  }
+  const p=poolOf(c); if(p.length) out+=`待排座：${p.join('、')}\n`;
+  if(navigator.clipboard) navigator.clipboard.writeText(out).then(()=>toast('名单已复制')).catch(()=>prompt('复制以下名单：',out));
+  else prompt('复制以下名单：',out);
+}
+let tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),1900);}
+
+/* ==================== 备份 / 恢复（跨存储空间的兜底） ====================
+   localStorage 按「来源(protocol+host+port)」隔离：
+   预览面板 http://127.0.0.1:7886 与桌面 file:// 是两个独立空间，互相读不到。
+   所以除自动保存外，额外提供"文件备份"通道，换浏览器/换打开方式也能把数据带走。 */
+function snapshot(){
+  // 打包成纯数据（剔除运行时字段 list）
+  const out={};
+  Object.keys(data).forEach(k=>{ if(k!=='list') out[k]=data[k]; });
+  out.savedAt=new Date().toISOString();
+  return out;
+}
+function doBackup(){
+  const payload=JSON.stringify(snapshot(),null,1);
+  const blob=new Blob([payload],{type:'application/json;charset=utf-8'});
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const name=`课堂排座备份_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+  toast('已导出备份：'+name);
+}
+function doRestore(){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='.json,application/json';
+  inp.onchange=()=>{
+    const f=inp.files&&inp.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      let obj;
+      try{obj=JSON.parse(rd.result);}
+      catch(e){toast('备份文件格式错误，无法读取');return;}
+      if(!obj||!obj.classes){toast('这不是本工具的备份文件');return;}
+      // 合并：以备份为准，覆盖同名班级；原始名单（RAW）本身不受影响
+      data=Object.assign({custom:{},deleted:[],pins:[],order:[],started:true},obj);
+      data.list=build();
+      cur=data.cur&&data.list.some(c=>c.id===data.cur)?data.cur:(data.list[0]&&data.list[0].id);
+      save();render();
+      const t=obj.savedAt?new Date(obj.savedAt).toLocaleString('zh-CN'):'未知时间';
+      toast(`已从 ${t} 的备份恢复 ${data.list.length} 个班级`);
+    };
+    rd.onerror=()=>toast('读取文件失败');
+    rd.readAsText(f,'utf-8');
+  };
+  inp.click();
+}
+
+/* ==================== 弹窗 ==================== */
+function openModal(title,body,okText,fn){
+  document.getElementById('mTitle').textContent=title;
+  document.getElementById('mBody').innerHTML=body;
+  document.getElementById('mOk').textContent=okText||'保存';
+  mOkFn=fn;
+  document.getElementById('modal').classList.remove('hide');
+}
+function closeModal(){ document.getElementById('modal').classList.add('hide'); mOkFn=null; }
+document.getElementById('mOk').addEventListener('click',()=>{ if(mOkFn){ if(mOkFn()===false)return; } closeModal(); });
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal')closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+const parseNames=t=>[...new Set(String(t).split(/[\n,，、;；\t]+/).map(s=>s.trim()).filter(Boolean))];
+const swRow=sel=>`<div class="pickrow">${THEMES.map(([k,v])=>
+  `<span class="sw2${k===sel?' on':''}" style="background:${v}" onclick="this.parentNode.querySelectorAll('.sw2').forEach(e=>e.classList.remove('on'));this.classList.add('on');document.getElementById('themePick').value='${k}'"></span>`).join('')}</div>
+  <input type="hidden" id="themePick" value="${sel}">`;
+
+function openNew(){
+  openModal('新建班级',`
+    <div class="field"><label>班级名称</label><input type="text" id="ncName" placeholder="例如：周三19点 提高班"></div>
+    <div class="field"><label>上课时间</label><input type="text" id="ncTime" placeholder="例如：周三 19:00-20:30"></div>
+    <div class="field"><label>配色风格</label>${swRow('slate')}</div>
+    <div class="field"><label>学生名单</label>
+      <textarea id="ncStu" placeholder="每行一个名字，也支持用逗号、顿号分隔&#10;张海萌&#10;段恩泽&#10;段润泽"></textarea>
+      <div class="hint">按 4 组 × 3 人自动排座；超过 12 人的会先进入待排座区。</div></div>
+    <div class="warnbox">自建班级保存在本机浏览器，不影响原有 16 个班级。</div>
+  `,'创建并排座',()=>{
+    const name=(document.getElementById('ncName').value||'').trim();
+    const stu=parseNames(document.getElementById('ncStu').value);
+    if(!name){toast('请填写班级名称');return false;}
+    data.custom=data.custom||{};
+    const id='u'+Date.now();
+    data.custom[id]={name,time:document.getElementById('ncTime').value.trim(),
+      students:stu,theme:document.getElementById('themePick').value,seats:defaultSeats(stu)};
+    data.list=build();
+    save();closeLauncher();enter(id);
+    toast('已创建「'+name+'」');
+  });
+  setTimeout(()=>{const e=document.getElementById('ncName');e&&e.focus();},60);
+}
+function openEdit(){
+  const c=cls(); if(!c)return;
+  openModal('编辑名单 · '+c.name,`
+    <div class="field"><label>班级名称</label><input type="text" id="ecName" value="${(c.name||'').replace(/"/g,'&quot;')}"></div>
+    <div class="field"><label>上课时间</label><input type="text" id="ecTime" value="${(c.time||'').replace(/"/g,'&quot;')}"></div>
+    <div class="field"><label>学生名单（每行一个）</label>
+      <textarea id="ecStu">${c.students.join('\n')}</textarea>
+      <div class="hint">共 ${c.students.length} 人。删除的学生会同时从座位上移除；新增的学生进入待排座区。</div></div>
+    ${c.custom?'<div class="warnbox">这是自建班级，可在此改名或删除。</div>':'<div class="warnbox">原始班级仅改名与增删学生，删除操作不会影响源数据。</div>'}
+  `,'保存',()=>{
+    const raw=document.getElementById('ecStu').value;
+    const stu=parseNames(raw);
+    if(!stu.length){ toast('名单不能为空 —— 请至少保留一名学生'); return false; }
+    const before=c.students;
+    c.name=(document.getElementById('ecName').value||'').trim()||c.name;
+    c.time=document.getElementById('ecTime').value.trim();
+    const added=stu.filter(n=>!before.includes(n));
+    const removed=before.filter(n=>!stu.includes(n));
+    c.students=stu;
+    // 座位只保留仍在名单里的人，并补足到 12 位（长度必须恒为 SLOTS）
+    const keep=c.seats.filter(n=>n&&stu.includes(n));
+    while(keep.length<SLOTS)keep.push(null);
+    c.seats=keep;
+    save();render();
+    const bits=[];
+    if(added.length)bits.push(`+${added.length}人`);
+    if(removed.length)bits.push(`-${removed.length}人`);
+    toast(bits.length
+      ? `已保存：新增 ${added.join('、')}；移除 ${removed.join('、')}`
+      : `已保存（${stu.length} 人，无增减）`);
+  });
+  setTimeout(()=>{const e=document.getElementById('ecName');e&&e.focus();},60);
+}
+
+/* ---- 指针拖拽 ---- */
+document.addEventListener('pointerdown',e=>{
+  const chip=e.target.closest&&e.target.closest('.chip'); if(!chip||view!=='seat')return;
+  if(e.target.closest('[contenteditable]'))return;
+  if(e.button!==undefined&&e.button!==0)return;
+  const from=chip.dataset.from||'pool', idx=from==='seat'?+chip.dataset.idx:-1;
+  const name=chip.dataset.name||(chip.querySelector('.nm')||{}).textContent||'';
+  drag={from,idx,name,chip,sx:e.clientX,sy:e.clientY,gh:null,target:null,pid:e.pointerId};
+  chip.setPointerCapture&&chip.setPointerCapture(e.pointerId);
+  const move=ev=>onMove(ev), up=()=>{cleanup();onUp();};
+  function cleanup(){document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);}
+  document.addEventListener('pointermove',move);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);
+});
+function onMove(e){
+  if(!drag)return;
+  if(!drag.gh){
+    if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<5)return;
+    const r=drag.chip.getBoundingClientRect();
+    const g=drag.chip.cloneNode(true);
+    g.classList.add('ghost');g.style.width=r.width+'px';
+    document.body.appendChild(g);drag.gh=g;drag.ox=e.clientX-r.left;drag.oy=e.clientY-r.top;
+    drag.chip.classList.add('dragging');
+  }
+  drag.gh.style.left=(e.clientX-drag.ox)+'px';
+  drag.gh.style.top=(e.clientY-drag.oy)+'px';
+  const under=document.elementFromPoint(e.clientX,e.clientY);
+  const seat=under&&under.closest('.seat');
+  const pool=under&&under.closest('.pool');
+  if(drag.target&&drag.target!==seat&&drag.target!==pool) drag.target.classList.remove('dropok');
+  drag.target=null;
+  if(seat){
+    const i=+seat.dataset.seat;
+    seat.classList.remove('swap');seat.classList.add('dropok');
+    if(((drag.from==='seat'&&drag.idx!==i)||drag.from==='pool')&&cls().seats[i])seat.classList.add('swap');
+    drag.target=seat;
+  }else if(pool){pool.classList.add('dropok');drag.target=pool;}
+  e.preventDefault();
+}
+function setDrag(d){ drag=d; }
+function onUp(){
+  if(!drag)return;
+  const d=drag;drag=null;
+  if(d.gh)d.gh.remove();
+  if(d.chip)d.chip.classList.remove('dragging');
+  document.querySelectorAll('.dropok,.swap').forEach(x=>x.classList.remove('dropok','swap'));
+  if(!d.target)return;
+  const c=cls(); if(!c)return;
+  if(d.target.classList.contains('seat')){
+    const to=+d.target.dataset.seat;
+    if(d.from==='seat'){const t=c.seats[to];c.seats[to]=c.seats[d.idx];c.seats[d.idx]=t;toast('已交换座位');}
+    else{
+      c.seats=c.seats.map(n=>(n&&n===d.name)?null:n);
+      const hit=c.seats[to];
+      c.seats[to]=d.name||null;
+      toast(hit?`${d.name} 已就座，${hit} 回到待排座区`:`${d.name||'学生'} 已就座`);
+    }
+  }else if(d.from==='seat'){c.seats[d.idx]=null;toast('已移回待排座区');}
+  save();render();
+}
+
+/* ==================== 启动 ==================== */
+data.list=build();
+const resume=data.list.find(c=>c.id===data.cur);
+cur=resume?resume.id:(data.list[0]?data.list[0].id:null);
+try{ render(); }catch(err){ console.error(err); }
+/* 首屏即探测存储能力，把结论直接告诉用户 */
+try{
+  localStorage.setItem(LS+'-probe','1');
+  localStorage.removeItem(LS+'-probe');
+}catch(e){
+  setTimeout(()=>toast('此浏览器禁止本地存储，修改不会自动保存 — 请用「备份」导出'),700);
+}
+if(!data.started) openLauncher();
+</script>
+</body>
+</html>
