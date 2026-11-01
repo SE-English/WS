@@ -1,0 +1,1154 @@
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英语时态互动学习</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0A7D6A',
+            secondary: '#A7D8BA',
+            accent: '#FF6B42',
+            background: '#D8FBF7',
+            foreground: '#0D2622'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    .tab-button {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab-button.active {
+      background: linear-gradient(135deg, #0A7D6A, #A7D8BA);
+      color: white;
+    }
+
+    .tab-button:not(.active):hover {
+      background: rgba(10, 125, 106, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .content-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .quiz-option {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid #e5e7eb;
+    }
+
+    .quiz-option:hover:not(.correct):not(.wrong):not(.disabled) {
+      border-color: #0A7D6A;
+      transform: translateX(8px);
+      box-shadow: 0 4px 12px rgba(10, 125, 106, 0.2);
+    }
+
+    .quiz-option.correct {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    }
+
+    .quiz-option.wrong {
+      border-color: #ef4444;
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+    }
+
+    .quiz-option.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #FF6B42, #ff8c6b);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(255, 107, 66, 0.3);
+    }
+
+    .progress-bar {
+      transition: width 0.5s ease;
+      background: linear-gradient(90deg, #0A7D6A, #A7D8BA);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tense-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+
+      .tab-button {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+  <style>
+    *,
+    ::before,
+    ::after {
+      --tw-border-spacing-x: 0;
+      --tw-border-spacing-y: 0;
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-rotate: 0;
+      --tw-skew-x: 0;
+      --tw-skew-y: 0;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-pan-x: ;
+      --tw-pan-y: ;
+      --tw-pinch-zoom: ;
+      --tw-scroll-snap-strictness: proximity;
+      --tw-gradient-from-position: ;
+      --tw-gradient-via-position: ;
+      --tw-gradient-to-position: ;
+      --tw-ordinal: ;
+      --tw-slashed-zero: ;
+      --tw-numeric-figure: ;
+      --tw-numeric-spacing: ;
+      --tw-numeric-fraction: ;
+      --tw-ring-inset: ;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-color: rgb(59 130 246 / 0.5);
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-colored: 0 0 #0000;
+      --tw-blur: ;
+      --tw-brightness: ;
+      --tw-contrast: ;
+      --tw-grayscale: ;
+      --tw-hue-rotate: ;
+      --tw-invert: ;
+      --tw-saturate: ;
+      --tw-sepia: ;
+      --tw-drop-shadow: ;
+      --tw-backdrop-blur: ;
+      --tw-backdrop-brightness: ;
+      --tw-backdrop-contrast: ;
+      --tw-backdrop-grayscale: ;
+      --tw-backdrop-hue-rotate: ;
+      --tw-backdrop-invert: ;
+      --tw-backdrop-opacity: ;
+      --tw-backdrop-saturate: ;
+      --tw-backdrop-sepia: ;
+      --tw-contain-size: ;
+      --tw-contain-layout: ;
+      --tw-contain-paint: ;
+      --tw-contain-style:
+    }
+
+    ::backdrop {
+      --tw-border-spacing-x: 0;
+      --tw-border-spacing-y: 0;
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-rotate: 0;
+      --tw-skew-x: 0;
+      --tw-skew-y: 0;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-pan-x: ;
+      --tw-pan-y: ;
+      --tw-pinch-zoom: ;
+      --tw-scroll-snap-strictness: proximity;
+      --tw-gradient-from-position: ;
+      --tw-gradient-via-position: ;
+      --tw-gradient-to-position: ;
+      --tw-ordinal: ;
+      --tw-slashed-zero: ;
+      --tw-numeric-figure: ;
+      --tw-numeric-spacing: ;
+      --tw-numeric-fraction: ;
+      --tw-ring-inset: ;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-color: rgb(59 130 246 / 0.5);
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-colored: 0 0 #0000;
+      --tw-blur: ;
+      --tw-brightness: ;
+      --tw-contrast: ;
+      --tw-grayscale: ;
+      --tw-hue-rotate: ;
+      --tw-invert: ;
+      --tw-saturate: ;
+      --tw-sepia: ;
+      --tw-drop-shadow: ;
+      --tw-backdrop-blur: ;
+      --tw-backdrop-brightness: ;
+      --tw-backdrop-contrast: ;
+      --tw-backdrop-grayscale: ;
+      --tw-backdrop-hue-rotate: ;
+      --tw-backdrop-invert: ;
+      --tw-backdrop-opacity: ;
+      --tw-backdrop-saturate: ;
+      --tw-backdrop-sepia: ;
+      --tw-contain-size: ;
+      --tw-contain-layout: ;
+      --tw-contain-paint: ;
+      --tw-contain-style:
+    }
+
+    /* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+    *,
+    ::after,
+    ::before {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: #e5e7eb
+    }
+
+    ::after,
+    ::before {
+      --tw-content: ''
+    }
+
+    :host,
+    html {
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      -moz-tab-size: 4;
+      tab-size: 4;
+      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    body {
+      margin: 0;
+      line-height: inherit
+    }
+
+    hr {
+      height: 0;
+      color: inherit;
+      border-top-width: 1px
+    }
+
+    abbr:where([title]) {
+      -webkit-text-decoration: underline dotted;
+      text-decoration: underline dotted
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: inherit;
+      font-weight: inherit
+    }
+
+    a {
+      color: inherit;
+      text-decoration: inherit
+    }
+
+    b,
+    strong {
+      font-weight: bolder
+    }
+
+    code,
+    kbd,
+    pre,
+    samp {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      font-size: 1em
+    }
+
+    small {
+      font-size: 80%
+    }
+
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline
+    }
+
+    sub {
+      bottom: -.25em
+    }
+
+    sup {
+      top: -.5em
+    }
+
+    table {
+      text-indent: 0;
+      border-color: inherit;
+      border-collapse: collapse
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font-family: inherit;
+      font-feature-settings: inherit;
+      font-variation-settings: inherit;
+      font-size: 100%;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0
+    }
+
+    button,
+    select {
+      text-transform: none
+    }
+
+    button,
+    input:where([type=button]),
+    input:where([type=reset]),
+    input:where([type=submit]) {
+      -webkit-appearance: button;
+      background-color: transparent;
+      background-image: none
+    }
+
+    :-moz-focusring {
+      outline: auto
+    }
+
+    :-moz-ui-invalid {
+      box-shadow: none
+    }
+
+    progress {
+      vertical-align: baseline
+    }
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+      height: auto
+    }
+
+    [type=search] {
+      -webkit-appearance: textfield;
+      outline-offset: -2px
+    }
+
+    ::-webkit-search-decoration {
+      -webkit-appearance: none
+    }
+
+    ::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      font: inherit
+    }
+
+    summary {
+      display: list-item
+    }
+
+    blockquote,
+    dd,
+    dl,
+    figure,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    p,
+    pre {
+      margin: 0
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0
+    }
+
+    legend {
+      padding: 0
+    }
+
+    menu,
+    ol,
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    dialog {
+      padding: 0
+    }
+
+    textarea {
+      resize: vertical
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      opacity: 1;
+      color: #9ca3af
+    }
+
+    [role=button],
+    button {
+      cursor: pointer
+    }
+
+    :disabled {
+      cursor: default
+    }
+
+    audio,
+    canvas,
+    embed,
+    iframe,
+    img,
+    object,
+    svg,
+    video {
+      display: block;
+      vertical-align: middle
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto
+    }
+
+    [hidden]:where(:not([hidden=until-found])) {
+      display: none
+    }
+
+    .container {
+      width: 100%
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        max-width: 640px
+      }
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        max-width: 768px
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1024px
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .container {
+        max-width: 1280px
+      }
+    }
+
+    @media (min-width: 1536px) {
+      .container {
+        max-width: 1536px
+      }
+    }
+
+    .sticky {
+      position: sticky
+    }
+
+    .top-0 {
+      top: 0px
+    }
+
+    .z-50 {
+      z-index: 50
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .mb-2 {
+      margin-bottom: 0.5rem
+    }
+
+    .mb-6 {
+      margin-bottom: 1.5rem
+    }
+
+    .mb-8 {
+      margin-bottom: 2rem
+    }
+
+    .mt-2 {
+      margin-top: 0.5rem
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem
+    }
+
+    .mt-6 {
+      margin-top: 1.5rem
+    }
+
+    .flex {
+      display: flex
+    }
+
+    .hidden {
+      display: none
+    }
+
+    .h-3 {
+      height: 0.75rem
+    }
+
+    .min-h-screen {
+      min-height: 100vh
+    }
+
+    .w-full {
+      width: 100%
+    }
+
+    .min-w-max {
+      min-width: max-content
+    }
+
+    .items-center {
+      align-items: center
+    }
+
+    .justify-between {
+      justify-content: space-between
+    }
+
+    .gap-2 {
+      gap: 0.5rem
+    }
+
+    .space-y-3> :not([hidden])~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+      margin-bottom: calc(0.75rem * var(--tw-space-y-reverse))
+    }
+
+    .overflow-x-auto {
+      overflow-x: auto
+    }
+
+    .whitespace-nowrap {
+      white-space: nowrap
+    }
+
+    .rounded-full {
+      border-radius: 9999px
+    }
+
+    .rounded-lg {
+      border-radius: 0.5rem
+    }
+
+    .rounded-2xl {
+      border-radius: 1rem
+    }
+
+    .bg-background {
+      --tw-bg-opacity: 1;
+      background-color: rgb(216 251 247 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-gray-200 {
+      --tw-bg-opacity: 1;
+      background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-white {
+      --tw-bg-opacity: 1;
+      background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+    }
+
+    .bg-gradient-to-r {
+      background-image: linear-gradient(to right, var(--tw-gradient-stops))
+    }
+
+    .from-blue-50 {
+      --tw-gradient-from: #eff6ff var(--tw-gradient-from-position);
+      --tw-gradient-to: rgb(239 246 255 / 0) var(--tw-gradient-to-position);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+    }
+
+    .to-teal-50 {
+      --tw-gradient-to: #f0fdfa var(--tw-gradient-to-position)
+    }
+
+    .p-6 {
+      padding: 1.5rem
+    }
+
+    .p-8 {
+      padding: 2rem
+    }
+
+    .p-4 {
+      padding: 1rem
+    }
+
+    .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem
+    }
+
+    .py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem
+    }
+
+    .py-4 {
+      padding-top: 1rem;
+      padding-bottom: 1rem
+    }
+
+    .py-8 {
+      padding-top: 2rem;
+      padding-bottom: 2rem
+    }
+
+    .px-6 {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem
+    }
+
+    .py-3 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem
+    }
+
+    .pb-2 {
+      padding-bottom: 0.5rem
+    }
+
+    .text-center {
+      text-align: center
+    }
+
+    .text-3xl {
+      font-size: 1.875rem;
+      line-height: 2.25rem
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+      line-height: 1.25rem
+    }
+
+    .text-2xl {
+      font-size: 1.5rem;
+      line-height: 2rem
+    }
+
+    .text-lg {
+      font-size: 1.125rem;
+      line-height: 1.75rem
+    }
+
+    .text-xl {
+      font-size: 1.25rem;
+      line-height: 1.75rem
+    }
+
+    .font-bold {
+      font-weight: 700
+    }
+
+    .font-medium {
+      font-weight: 500
+    }
+
+    .font-semibold {
+      font-weight: 600
+    }
+
+    .text-foreground {
+      --tw-text-opacity: 1;
+      color: rgb(13 38 34 / var(--tw-text-opacity, 1))
+    }
+
+    .text-gray-600 {
+      --tw-text-opacity: 1;
+      color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+    }
+
+    .text-primary {
+      --tw-text-opacity: 1;
+      color: rgb(10 125 106 / var(--tw-text-opacity, 1))
+    }
+
+    .text-white {
+      --tw-text-opacity: 1;
+      color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+    }
+
+    .shadow-md {
+      --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+    }
+  </style>
+</head>
+
+<body class="bg-background min-h-screen">
+  <!-- 头部 -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <h1 class="text-3xl font-bold text-center"
+        style="background: linear-gradient(135deg, #0A7D6A, #A7D8BA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        英语时态互动学习 📚
+      </h1>
+      <p class="text-center text-gray-600 mt-2">掌握10大时态，轻松应对英语考试</p>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 进度条 -->
+    <div class="mb-8 content-card p-6">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-foreground font-semibold">学习进度</span>
+        <span class="text-primary font-bold" id="progressText">0/10</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div class="progress-bar h-3 rounded-full" id="progressBar" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- 时态导航标签 -->
+    <div class="mb-6 overflow-x-auto">
+      <div class="flex gap-2 min-w-max pb-2">
+        <button class="tab-button active px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-continuous">过去进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-perfect">过去完成时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-future">过去将来时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-perfect-continuous">过去完成进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-future-continuous">过去将来进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="future-continuous">将来进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-future-perfect">过去将来完成时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="past-future-perfect-continuous">过去将来完成进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="future-perfect-continuous">将来完成进行时</button>
+        <button class="tab-button px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap"
+          data-tense="present-perfect">现在完成时</button>
+      </div>
+    </div>
+
+    <!-- 时态内容区 -->
+    <div id="tenseContent" class="content-card p-8 fade-in">
+      <div class="fade-in">
+        <h2 class="text-2xl font-bold text-foreground mb-6">过去进行时</h2>
+
+        <!-- 知识点图片 -->
+        <div class="mb-8">
+          <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/qqdMwxKm4jMmQWmN3rpsrU.jpeg"
+            alt="过去进行时" class="tense-image mx-auto">
+        </div>
+
+        <!-- 互动练习 -->
+        <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-6">
+          <h3 class="text-xl font-semibold text-foreground mb-4">📝 互动练习</h3>
+          <p class="text-lg text-foreground mb-4">选择正确的过去进行时句子：</p>
+
+          <div class="space-y-3" id="quizOptions">
+
+            <div class="quiz-option p-4 rounded-lg bg-white" data-index="0">
+              <span class="font-medium">A. I was watching TV at 8 yesterday.</span>
+            </div>
+
+            <div class="quiz-option p-4 rounded-lg bg-white" data-index="1">
+              <span class="font-medium">B. I watch TV at 8 yesterday.</span>
+            </div>
+
+            <div class="quiz-option p-4 rounded-lg bg-white" data-index="2">
+              <span class="font-medium">C. I am watching TV at 8 yesterday.</span>
+            </div>
+
+            <div class="quiz-option p-4 rounded-lg bg-white" data-index="3">
+              <span class="font-medium">D. I watched TV at 8 yesterday.</span>
+            </div>
+
+          </div>
+
+          <div id="feedback" class="mt-6 hidden">
+            <div class="p-4 rounded-lg">
+              <p class="text-lg font-semibold"></p>
+            </div>
+          </div>
+
+          <button id="nextBtn" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold mt-6 hidden">
+            下一个时态 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    // 时态数据配置
+    const tenseData = {
+      'past-continuous': {
+        name: '过去进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/qqdMwxKm4jMmQWmN3rpsrU.jpeg',
+        quiz: {
+          question: '选择正确的过去进行时句子：',
+          options: [
+            'I was watching TV at 8 yesterday.',
+            'I watch TV at 8 yesterday.',
+            'I am watching TV at 8 yesterday.',
+            'I watched TV at 8 yesterday.'
+          ],
+          correct: 0
+        }
+      },
+      'past-perfect': {
+        name: '过去完成时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/itNQt6MQTiQQHVn3gazCmi.jpeg',
+        quiz: {
+          question: '下列哪个句子正确使用了过去完成时？',
+          options: [
+            'By the time I got home, my mom cooked dinner.',
+            'By the time I got home, my mom had cooked dinner.',
+            'By the time I got home, my mom has cooked dinner.',
+            'By the time I got home, my mom was cooking dinner.'
+          ],
+          correct: 1
+        }
+      },
+      'past-future': {
+        name: '过去将来时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/zqu6qZM4z2PXc9SMxwLXpC.jpeg',
+        quiz: {
+          question: '他说他明天会来。正确的英文表达是：',
+          options: [
+            'He said he will come tomorrow.',
+            'He said he would come tomorrow.',
+            'He says he would come tomorrow.',
+            'He said he comes tomorrow.'
+          ],
+          correct: 1
+        }
+      },
+      'past-perfect-continuous': {
+        name: '过去完成进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/8GqYR5ScRF7LY6vFJ253Gi.jpeg',
+        quiz: {
+          question: '到昨天晚上，我已经学了两个小时英语了。正确的表达是：',
+          options: [
+            'I had learned English for two hours by last night.',
+            'I had been learning English for two hours by last night.',
+            'I have been learning English for two hours by last night.',
+            'I was learning English for two hours by last night.'
+          ],
+          correct: 1
+        }
+      },
+      'past-future-continuous': {
+        name: '过去将来进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/awFHiJ5ghSTTAuwfgfPhig.jpeg',
+        quiz: {
+          question: '下周这时，我会正在和同学踢足球。正确的表达是：',
+          options: [
+            'I will play football with my classmates this time next week.',
+            'I would be playing football with my classmates this time next week.',
+            'I will be play football with my classmates this time next week.',
+            'I would playing football with my classmates this time next week.'
+          ],
+          correct: 1
+        }
+      },
+      'future-continuous': {
+        name: '将来进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/R7w9ymbAyj248kK9NyCA7A.jpeg',
+        quiz: {
+          question: '明天这个时候，我正在坐飞机去北京。正确的表达是：',
+          options: [
+            'I will sit on a plane to Beijing this time tomorrow.',
+            'I am sitting on a plane to Beijing this time tomorrow.',
+            'I will be sitting on a plane to Beijing this time tomorrow.',
+            'I would be sitting on a plane to Beijing this time tomorrow.'
+          ],
+          correct: 2
+        }
+      },
+      'past-future-perfect': {
+        name: '过去将来完成时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/vaVmTNS6T6jDXHZ8tn4MrX.jpeg',
+        quiz: {
+          question: '他说他到年底就会已经学完1000个单词。正确的表达是：',
+          options: [
+            'He said he will have learned 1000 words by the end of the year.',
+            'He said he would have learned 1000 words by the end of the year.',
+            'He said he had learned 1000 words by the end of the year.',
+            'He says he would have learned 1000 words by the end of the year.'
+          ],
+          correct: 1
+        }
+      },
+      'past-future-perfect-continuous': {
+        name: '过去将来完成进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/ZPqZ6Gga3FL3NmBh2TNdA8.jpeg',
+        quiz: {
+          question: '到昨天为止，他已经学了三年英语。正确的表达是：',
+          options: [
+            'He had learned English for three years by yesterday.',
+            'He had been learning English for three years by yesterday.',
+            'He has been learning English for three years by yesterday.',
+            'He would have been learning English for three years by yesterday.'
+          ],
+          correct: 1
+        }
+      },
+      'future-perfect-continuous': {
+        name: '将来完成进行时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/3nirNWtLZRiWwsG8bDpAYg.jpeg',
+        quiz: {
+          question: '到明年这个时候，我已经学了三年英语了。正确的表达是：',
+          options: [
+            'I will learn English for three years by this time next year.',
+            'I will have learned English for three years by this time next year.',
+            'I will have been learning English for three years by this time next year.',
+            'I will be learning English for three years by this time next year.'
+          ],
+          correct: 2
+        }
+      },
+      'present-perfect': {
+        name: '现在完成时',
+        image: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/3zVueMfFURe6PPJMtK6ygP.jpeg',
+        quiz: {
+          question: '我学英语三年了。正确的表达是：',
+          options: [
+            'I learn English for three years.',
+            'I learned English for three years.',
+            'I have learned English for three years.',
+            'I am learning English for three years.'
+          ],
+          correct: 2
+        }
+      }
+    };
+
+    // 状态管理
+    let currentTense = 'past-continuous';
+    let completedTenses = new Set();
+
+    // 初始化
+    function init() {
+      renderContent(currentTense);
+      setupTabListeners();
+      updateProgress();
+    }
+
+    // 渲染内容
+    function renderContent(tenseKey) {
+      const data = tenseData[tenseKey];
+      const content = document.getElementById('tenseContent');
+
+      content.innerHTML = `
+        <div class="fade-in">
+          <h2 class="text-2xl font-bold text-foreground mb-6">${data.name}</h2>
+          
+          <!-- 知识点图片 -->
+          <div class="mb-8">
+            <img src="${data.image}" alt="${data.name}" class="tense-image mx-auto">
+          </div>
+          
+          <!-- 互动练习 -->
+          <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-6">
+            <h3 class="text-xl font-semibold text-foreground mb-4">📝 互动练习</h3>
+            <p class="text-lg text-foreground mb-4">${data.quiz.question}</p>
+            
+            <div class="space-y-3" id="quizOptions">
+              ${data.quiz.options.map((option, index) => `
+                <div class="quiz-option p-4 rounded-lg bg-white" data-index="${index}">
+                  <span class="font-medium">${String.fromCharCode(65 + index)}. ${option}</span>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div id="feedback" class="mt-6 hidden">
+              <div class="p-4 rounded-lg">
+                <p class="text-lg font-semibold"></p>
+              </div>
+            </div>
+            
+            <button id="nextBtn" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold mt-6 hidden">
+              下一个时态 →
+            </button>
+          </div>
+        </div>
+      `;
+
+      setupQuizListeners(tenseKey, data.quiz.correct);
+    }
+
+    // 设置答题监听
+    function setupQuizListeners(tenseKey, correctIndex) {
+      const options = document.querySelectorAll('.quiz-option');
+      const feedback = document.getElementById('feedback');
+      const nextBtn = document.getElementById('nextBtn');
+
+      options.forEach((option, index) => {
+        option.addEventListener('click', () => {
+          if (option.classList.contains('disabled')) return;
+
+          // 禁用所有选项
+          options.forEach(opt => opt.classList.add('disabled'));
+
+          // 显示反馈
+          if (index === correctIndex) {
+            option.classList.add('correct');
+            feedback.querySelector('p').textContent = '✅ 回答正确！太棒了！';
+            feedback.querySelector('div').className = 'p-4 rounded-lg bg-green-100 border-2 border-green-500';
+            feedback.classList.remove('hidden');
+
+            // 标记完成
+            completedTenses.add(tenseKey);
+            updateProgress();
+
+            // 显示下一题按钮
+            if (completedTenses.size < Object.keys(tenseData).length) {
+              nextBtn.classList.remove('hidden');
+            } else {
+              nextBtn.textContent = '🎉 恭喜完成所有时态学习！';
+              nextBtn.classList.remove('hidden');
+              nextBtn.onclick = () => {
+                alert('恭喜你完成了所有10个时态的学习！继续加油！💪');
+              };
+            }
+          } else {
+            option.classList.add('wrong');
+            options[correctIndex].classList.add('correct');
+            feedback.querySelector('p').textContent = '❌ 答案错误，正确答案已标出，再看看知识点吧！';
+            feedback.querySelector('div').className = 'p-4 rounded-lg bg-red-100 border-2 border-red-500';
+            feedback.classList.remove('hidden');
+          }
+        });
+      });
+
+      // 下一题按钮
+      nextBtn.addEventListener('click', () => {
+        const tenseKeys = Object.keys(tenseData);
+        const currentIndex = tenseKeys.indexOf(tenseKey);
+        const nextIndex = (currentIndex + 1) % tenseKeys.length;
+        const nextTense = tenseKeys[nextIndex];
+
+        // 切换标签
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.tense === nextTense) {
+            btn.classList.add('active');
+          }
+        });
+
+        currentTense = nextTense;
+        renderContent(nextTense);
+      });
+    }
+
+    // 设置标签监听
+    function setupTabListeners() {
+      const tabs = document.querySelectorAll('.tab-button');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentTense = tab.dataset.tense;
+          renderContent(currentTense);
+        });
+      });
+    }
+
+    // 更新进度
+    function updateProgress() {
+      const total = Object.keys(tenseData).length;
+      const completed = completedTenses.size;
+      const percentage = (completed / total) * 100;
+
+      document.getElementById('progressText').textContent = `${completed}/${total}`;
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+    }
+
+    // 启动应用
+    init();
+  </script>
+
+</body>
+
+</html>

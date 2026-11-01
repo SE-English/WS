@@ -1,0 +1,789 @@
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英语时态学习</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF5600',
+            secondary: '#4ECDC4',
+            accent: '#FFD93D',
+            background: '#F4F3EC',
+            cardBg: '#FFFFFF'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    .nav-item {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 3px;
+      bottom: -2px;
+      left: 50%;
+      background: linear-gradient(135deg, #FF5600, #FF8941);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav-item:hover::after,
+    .nav-item.active::after {
+      width: 100%;
+    }
+
+    .nav-item.active {
+      color: #FF5600;
+      font-weight: 600;
+    }
+
+    .tense-card {
+      transition: all 0.3s ease;
+    }
+
+    .quiz-option {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .quiz-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(255, 86, 0, 0.2);
+    }
+
+    .quiz-option.correct {
+      background: linear-gradient(135deg, #4ECDC4, #44A08D);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .quiz-option.wrong {
+      background: linear-gradient(135deg, #FF6B6B, #EE5A6F);
+      color: white;
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .knowledge-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .score-badge {
+      background: linear-gradient(135deg, #FFD93D, #FF8941);
+      color: #0C0302;
+      font-weight: bold;
+      padding: 8px 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(255, 86, 0, 0.3);
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sticky{position:sticky}.top-0{top:0px}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.rounded-lg{border-radius:0.5rem}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-xl{border-radius:0.75rem}.border-2{border-width:2px}.border-l-4{border-left-width:4px}.border-blue-500{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.bg-background{--tw-bg-opacity:1;background-color:rgb(244 243 236 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.hover\:border-primary:hover{--tw-border-opacity:1;border-color:rgb(255 86 0 / var(--tw-border-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body class="bg-background">
+  <!-- 顶部导航栏 -->
+  <nav class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold" style="background: linear-gradient(135deg, #FF5600, #FF8941); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          🎯 英语时态学习中心
+        </h1>
+        <div class="score-badge" id="scoreDisplay">
+          得分: <span id="score">0</span> / <span id="totalQuestions">0</span>
+        </div>
+      </div>
+      
+      <!-- 时态导航 -->
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button class="nav-item active px-4 py-2 rounded-lg text-sm" data-tense="present-simple">一般现在时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="present-continuous">现在进行时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="present-perfect">现在完成时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="present-perfect-continuous">现在完成进行时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="past-simple">一般过去时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="past-continuous">过去进行时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="past-perfect">过去完成时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="past-perfect-continuous">过去完成进行时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="future-simple">一般将来时</button>
+        <button class="nav-item px-4 py-2 rounded-lg text-sm" data-tense="future-continuous">将来进行时</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <div id="contentArea" class="fade-in">
+        <div class="tense-card bg-white rounded-3xl shadow-lg p-8 mb-8" style="transform: translateY(0px); opacity: 1;">
+          <h2 class="text-3xl font-bold text-center mb-6" style="background: linear-gradient(135deg, #FF5600, #FF8941); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            一般现在时
+          </h2>
+          
+          <!-- 知识点图片 -->
+          <div class="flex justify-center mb-8">
+            <img src="https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/RyMrRiXoGLnPbnsrCLLQce.png" alt="一般现在时" class="knowledge-img">
+          </div>
+
+          <!-- 答题区域 -->
+          <div class="mt-8">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">📝 互动练习</h3>
+            <div id="quizContainer" class="space-y-6">
+              
+                <div class="quiz-item bg-gray-50 rounded-2xl p-6">
+                  <p class="text-lg font-semibold mb-4 text-gray-800">
+                    1. My father usually ____ (watch) TV in the evening.
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="0" data-option="0">
+                        A. watch
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="0" data-option="1">
+                        B. watches
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="0" data-option="2">
+                        C. watching
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="0" data-option="3">
+                        D. watched
+                      </button>
+                    
+                  </div>
+                  <div class="explanation mt-4 hidden">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-sm text-blue-800">
+                        <strong>💡 解析：</strong>主语是第三人称单数（father），动词要加-s或-es
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="quiz-item bg-gray-50 rounded-2xl p-6">
+                  <p class="text-lg font-semibold mb-4 text-gray-800">
+                    2. ____ they ____ (go) to school by bus every day?
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="1" data-option="0">
+                        A. Does...go
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="1" data-option="1">
+                        B. Do...go
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="1" data-option="2">
+                        C. Are...going
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="1" data-option="3">
+                        D. Did...go
+                      </button>
+                    
+                  </div>
+                  <div class="explanation mt-4 hidden">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-sm text-blue-800">
+                        <strong>💡 解析：</strong>主语是they（复数），疑问句用Do，动词用原形
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="quiz-item bg-gray-50 rounded-2xl p-6">
+                  <p class="text-lg font-semibold mb-4 text-gray-800">
+                    3. The sun ____ (rise) in the east.
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="2" data-option="0">
+                        A. rise
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="2" data-option="1">
+                        B. rises
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="2" data-option="2">
+                        C. rising
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="2" data-option="3">
+                        D. rose
+                      </button>
+                    
+                  </div>
+                  <div class="explanation mt-4 hidden">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-sm text-blue-800">
+                        <strong>💡 解析：</strong>客观真理用一般现在时，主语是第三人称单数，动词加-s
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="quiz-item bg-gray-50 rounded-2xl p-6">
+                  <p class="text-lg font-semibold mb-4 text-gray-800">
+                    4. She ____ (not like) apples.
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="3" data-option="0">
+                        A. don't like
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="3" data-option="1">
+                        B. doesn't like
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="3" data-option="2">
+                        C. isn't like
+                      </button>
+                    
+                      <button class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary" data-question="3" data-option="3">
+                        D. didn't like
+                      </button>
+                    
+                  </div>
+                  <div class="explanation mt-4 hidden">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-sm text-blue-800">
+                        <strong>💡 解析：</strong>主语是第三人称单数，否定句用doesn't，动词用原形
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <script type="module">
+    // 时态数据配置
+    const tensesData = {
+      'present-simple': {
+        title: '一般现在时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/RyMrRiXoGLnPbnsrCLLQce.png',
+        questions: [
+          {
+            question: 'My father usually ____ (watch) TV in the evening.',
+            options: ['watch', 'watches', 'watching', 'watched'],
+            correct: 1,
+            explanation: '主语是第三人称单数（father），动词要加-s或-es'
+          },
+          {
+            question: '____ they ____ (go) to school by bus every day?',
+            options: ['Does...go', 'Do...go', 'Are...going', 'Did...go'],
+            correct: 1,
+            explanation: '主语是they（复数），疑问句用Do，动词用原形'
+          },
+          {
+            question: 'The sun ____ (rise) in the east.',
+            options: ['rise', 'rises', 'rising', 'rose'],
+            correct: 1,
+            explanation: '客观真理用一般现在时，主语是第三人称单数，动词加-s'
+          },
+          {
+            question: 'She ____ (not like) apples.',
+            options: ["don't like", "doesn't like", "isn't like", "didn't like"],
+            correct: 1,
+            explanation: '主语是第三人称单数，否定句用doesn\'t，动词用原形'
+          }
+        ]
+      },
+      'present-continuous': {
+        title: '现在进行时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/CYBmwftLtNqFAawCp9fNef.png',
+        questions: [
+          {
+            question: 'Look! The bus ____ (come).',
+            options: ['come', 'comes', 'is coming', 'came'],
+            correct: 2,
+            explanation: 'Look提示现在正在发生，用现在进行时：be + doing'
+          },
+          {
+            question: 'Listen! Someone ____ (sing) in the next room.',
+            options: ['sing', 'sings', 'is singing', 'sang'],
+            correct: 2,
+            explanation: 'Listen提示现在正在发生，用现在进行时'
+          },
+          {
+            question: 'They ____ (not watch) TV right now.',
+            options: ["don't watch", "aren't watching", "isn't watching", "didn't watch"],
+            correct: 1,
+            explanation: 'right now提示现在进行时，主语是复数用aren\'t'
+          },
+          {
+            question: 'I ____ the answer now. (know)',
+            options: ['am knowing', 'know', 'knowing', 'knows'],
+            correct: 1,
+            explanation: 'know是状态动词，不能用进行时，要用一般现在时'
+          }
+        ]
+      },
+      'present-perfect': {
+        title: '现在完成时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/mLdsdfB8mVJ84JxVwDR3An.jpg',
+        questions: [
+          {
+            question: 'I ____ (lose) my key.',
+            options: ['lose', 'lost', 'have lost', 'am losing'],
+            correct: 2,
+            explanation: '过去的动作对现在有影响（现在进不了门），用现在完成时'
+          },
+          {
+            question: '____ you ever ____ (be) to Beijing?',
+            options: ['Do...go', 'Did...go', 'Have...been', 'Are...going'],
+            correct: 2,
+            explanation: 'ever提示经历，用现在完成时：Have you ever been'
+          },
+          {
+            question: 'He ____ (leave) two days ago.',
+            options: ['has left', 'have left', 'left', 'leaves'],
+            correct: 2,
+            explanation: 'ago提示具体过去时间，用一般过去时，不能用现在完成时'
+          },
+          {
+            question: 'I ____ (know) him for three years.',
+            options: ['know', 'knew', 'have known', 'am knowing'],
+            correct: 2,
+            explanation: 'for + 时间段，表示持续到现在，用现在完成时'
+          }
+        ]
+      },
+      'present-perfect-continuous': {
+        title: '现在完成进行时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/p6Z6pb78MzegZz8VSW6uhR.png',
+        questions: [
+          {
+            question: 'The baby is crying. He ____ (cry) for half an hour.',
+            options: ['cries', 'cried', 'has cried', 'has been crying'],
+            correct: 3,
+            explanation: '强调动作从过去持续到现在，用现在完成进行时'
+          },
+          {
+            question: 'You look tired. ____ you ____ (work) too hard?',
+            options: ['Do...work', 'Did...work', 'Have...worked', 'Have...been working'],
+            correct: 3,
+            explanation: '强调过程和持续性，用现在完成进行时'
+          },
+          {
+            question: 'I ____ (wait) for you since 8 o\'clock.',
+            options: ['wait', 'waited', 'have waited', 'have been waiting'],
+            correct: 3,
+            explanation: 'since + 时间点，强调持续等待的过程'
+          },
+          {
+            question: 'I ____ (know) him for years.',
+            options: ['am knowing', 'have been knowing', 'have known', 'know'],
+            correct: 2,
+            explanation: 'know是状态动词，不能用进行时，用现在完成时'
+          }
+        ]
+      },
+      'past-simple': {
+        title: '一般过去时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/b3bnZvxpT9qm5n3V6shDHN.png',
+        questions: [
+          {
+            question: 'I ____ (go) to school yesterday.',
+            options: ['go', 'goes', 'went', 'going'],
+            correct: 2,
+            explanation: 'yesterday提示过去时间，go的过去式是went'
+          },
+          {
+            question: 'I ____ (not play) game last night.',
+            options: ["don't play", "didn't play", "doesn't play", "am not playing"],
+            correct: 1,
+            explanation: '过去时否定句用didn\'t，动词用原形'
+          },
+          {
+            question: '____ you ____ (watch) TV yesterday?',
+            options: ['Do...watch', 'Did...watch', 'Are...watching', 'Have...watched'],
+            correct: 1,
+            explanation: 'yesterday提示过去时间，疑问句用Did，动词用原形'
+          },
+          {
+            question: 'I play football yesterday.',
+            options: ['正确', '错误：应该用played', '错误：应该用playing', '错误：应该用plays'],
+            correct: 1,
+            explanation: 'yesterday提示过去时间，必须用过去式played'
+          }
+        ]
+      },
+      'past-continuous': {
+        title: '过去进行时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/cKfUES23PeHpNuKWYBmJX3.jpg',
+        questions: [
+          {
+            question: 'I ____ (watch) TV at 8 pm yesterday.',
+            options: ['watch', 'watched', 'am watching', 'was watching'],
+            correct: 3,
+            explanation: '过去某个时间点正在做的事，用过去进行时：was/were + doing'
+          },
+          {
+            question: 'They ____ (play) basketball when I saw them.',
+            options: ['play', 'played', 'were playing', 'are playing'],
+            correct: 2,
+            explanation: 'when引导的时间状语从句，主句用过去进行时'
+          },
+          {
+            question: 'He ____ (start) the car. (瞬间动作)',
+            options: ['was starting', 'started', 'is starting', 'starts'],
+            correct: 1,
+            explanation: '瞬间动作（开始、停止）不能用进行时，用一般过去时'
+          },
+          {
+            question: 'What ____ you ____ (do) at this time yesterday?',
+            options: ['do...do', 'did...do', 'were...doing', 'are...doing'],
+            correct: 2,
+            explanation: 'at this time yesterday提示过去某时刻，用过去进行时'
+          }
+        ]
+      },
+      'past-perfect': {
+        title: '过去完成时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/K9mnGZCMgLUx5pi4J86mHW.jpg',
+        questions: [
+          {
+            question: 'When I arrived, the bus ____ (leave).',
+            options: ['leave', 'left', 'has left', 'had left'],
+            correct: 3,
+            explanation: '公交车离开发生在我到达之前，用过去完成时'
+          },
+          {
+            question: 'He told me he ____ (see) the movie the week before.',
+            options: ['see', 'saw', 'has seen', 'had seen'],
+            correct: 3,
+            explanation: '看电影发生在告诉我之前，过去的过去用过去完成时'
+          },
+          {
+            question: 'I finished my homework yesterday.',
+            options: ['正确', '错误：应该用had finished', '错误：应该用have finished', '错误：应该用finish'],
+            correct: 0,
+            explanation: '只有一个过去动作，没有参照点，用一般过去时即可'
+          },
+          {
+            question: 'By 8 o\'clock last night, he ____ (finish) his work.',
+            options: ['finish', 'finished', 'has finished', 'had finished'],
+            correct: 3,
+            explanation: 'By + 过去时间点，表示在那之前已完成，用过去完成时'
+          }
+        ]
+      },
+      'past-perfect-continuous': {
+        title: '过去完成进行时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/6XdZhWP2N9CTTBrUE69gPb.png',
+        questions: [
+          {
+            question: 'When I got home, my mother ____ (cook) dinner for an hour.',
+            options: ['cook', 'cooked', 'had cooked', 'had been cooking'],
+            correct: 3,
+            explanation: '强调在我到家之前，妈妈一直在做饭的过程'
+          },
+          {
+            question: '____ they ____ (play) football before it started to rain?',
+            options: ['Do...play', 'Did...play', 'Had...played', 'Had...been playing'],
+            correct: 3,
+            explanation: '强调下雨前一直在踢球的持续过程'
+          },
+          {
+            question: 'He was tired because he ____ (work) hard all day.',
+            options: ['work', 'worked', 'had worked', 'had been working'],
+            correct: 3,
+            explanation: '强调一整天持续工作的过程导致疲劳'
+          },
+          {
+            question: 'I ____ (know) him for years before I met him.',
+            options: ['know', 'knew', 'had known', 'had been knowing'],
+            correct: 2,
+            explanation: 'know是状态动词，不能用进行时，用过去完成时'
+          }
+        ]
+      },
+      'future-simple': {
+        title: '一般将来时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/2EgRFtad3w8oVcgmYD6Yf2.jpg',
+        questions: [
+          {
+            question: 'I ____ swimming tomorrow.',
+            options: ['will to go', 'will go', 'will going', 'go'],
+            correct: 1,
+            explanation: 'will后面接动词原形，不能加to或-ing'
+          },
+          {
+            question: 'I ____ study hard next term.',
+            options: ['going to', 'am going to', 'will going to', 'will to'],
+            correct: 1,
+            explanation: 'be going to结构，不能漏掉be动词'
+          },
+          {
+            question: 'Look at the clouds! It ____ rain.',
+            options: ['will', 'is going to', 'will be', 'going to'],
+            correct: 1,
+            explanation: '根据迹象做出预测，用be going to'
+          },
+          {
+            question: 'If it ____ tomorrow, I will stay home.',
+            options: ['will rain', 'rains', 'is going to rain', 'rain'],
+            correct: 1,
+            explanation: '时间/条件状语从句用一般现在时，主句用将来时（主将从现）'
+          }
+        ]
+      },
+      'future-continuous': {
+        title: '将来进行时',
+        imageUrl: 'https://musk-online.fbcontent.cn/pub-musk-ai-studio/user/upload/20/aLYKZU59jpKTYjHFU2Q79D.jpg',
+        questions: [
+          {
+            question: 'I ____ (watch) a soccer match at 8 PM tomorrow.',
+            options: ['will watch', 'will be watch', 'will be watching', 'am watching'],
+            correct: 2,
+            explanation: '将来某个时间点正在进行的动作：will be + doing'
+          },
+          {
+            question: 'This time next Monday, we ____ (fly) to Beijing.',
+            options: ['will fly', 'will be fly', 'will be flying', 'are flying'],
+            correct: 2,
+            explanation: 'This time next Monday提示将来某时刻，用将来进行时'
+          },
+          {
+            question: 'He will doing homework at 5 o\'clock tomorrow.',
+            options: ['正确', '错误：应该用will be doing', '错误：应该用will do', '错误：应该用does'],
+            correct: 1,
+            explanation: 'will和doing中间不能漏掉be动词'
+          },
+          {
+            question: 'I will be sleeping tomorrow.',
+            options: ['正确', '错误：应该加具体时间点', '错误：应该用will sleep', '错误：应该用sleep'],
+            correct: 1,
+            explanation: '将来进行时需要明确的时间点，如at 10 PM tomorrow'
+          }
+        ]
+      }
+    };
+
+    // 全局状态
+    let currentTense = 'present-simple';
+    let userAnswers = {};
+    let totalScore = 0;
+    let totalQuestions = 0;
+
+    // 初始化
+    function init() {
+      loadTenseContent(currentTense);
+      setupNavigation();
+      updateScoreDisplay();
+    }
+
+    // 设置导航
+    function setupNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const tense = item.dataset.tense;
+          if (tense !== currentTense) {
+            // 更新导航状态
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            
+            // 切换内容
+            currentTense = tense;
+            loadTenseContent(tense);
+          }
+        });
+      });
+    }
+
+    // 加载时态内容
+    function loadTenseContent(tense) {
+      const data = tensesData[tense];
+      const contentArea = document.getElementById('contentArea');
+      
+      contentArea.innerHTML = `
+        <div class="tense-card bg-white rounded-3xl shadow-lg p-8 mb-8">
+          <h2 class="text-3xl font-bold text-center mb-6" style="background: linear-gradient(135deg, #FF5600, #FF8941); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            ${data.title}
+          </h2>
+          
+          <!-- 知识点图片 -->
+          <div class="flex justify-center mb-8">
+            <img src="${data.imageUrl}" alt="${data.title}" class="knowledge-img">
+          </div>
+
+          <!-- 答题区域 -->
+          <div class="mt-8">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">📝 互动练习</h3>
+            <div id="quizContainer" class="space-y-6">
+              ${data.questions.map((q, index) => `
+                <div class="quiz-item bg-gray-50 rounded-2xl p-6">
+                  <p class="text-lg font-semibold mb-4 text-gray-800">
+                    ${index + 1}. ${q.question}
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${q.options.map((option, optIndex) => `
+                      <button 
+                        class="quiz-option bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-primary"
+                        data-question="${index}"
+                        data-option="${optIndex}"
+                      >
+                        ${String.fromCharCode(65 + optIndex)}. ${option}
+                      </button>
+                    `).join('')}
+                  </div>
+                  <div class="explanation mt-4 hidden">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-sm text-blue-800">
+                        <strong>💡 解析：</strong>${q.explanation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 添加答题事件
+      setupQuizEvents(tense);
+
+      // 入场动画
+      anime({
+        targets: '.tense-card',
+        translateY: [30, 0],
+        opacity: [0, 1],
+        duration: 600,
+        easing: 'easeOutExpo'
+      });
+    }
+
+    // 设置答题事件
+    function setupQuizEvents(tense) {
+      const data = tensesData[tense];
+      const options = document.querySelectorAll('.quiz-option');
+      
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          const questionIndex = parseInt(this.dataset.question);
+          const optionIndex = parseInt(this.dataset.option);
+          const correctIndex = data.questions[questionIndex].correct;
+          
+          // 获取当前题目的所有选项
+          const questionOptions = document.querySelectorAll(`[data-question="${questionIndex}"]`);
+          
+          // 如果已经回答过，不再响应
+          if (questionOptions[0].classList.contains('correct') || 
+              questionOptions[0].classList.contains('wrong')) {
+            return;
+          }
+
+          // 显示解析
+          const explanation = this.closest('.quiz-item').querySelector('.explanation');
+          explanation.classList.remove('hidden');
+
+          // 判断答案
+          if (optionIndex === correctIndex) {
+            this.classList.add('correct');
+            totalScore++;
+            
+            // 正确动画
+            anime({
+              targets: this,
+              scale: [1, 1.05, 1],
+              duration: 500,
+              easing: 'easeInOutQuad'
+            });
+
+            // 播放成功音效（可选）
+            playSound('correct');
+          } else {
+            this.classList.add('wrong');
+            // 同时显示正确答案
+            questionOptions[correctIndex].classList.add('correct');
+            
+            // 错误动画
+            playSound('wrong');
+          }
+
+          // 禁用所有选项
+          questionOptions.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+          });
+
+          totalQuestions++;
+          updateScoreDisplay();
+        });
+      });
+    }
+
+    // 更新分数显示
+    function updateScoreDisplay() {
+      document.getElementById('score').textContent = totalScore;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+    }
+
+    // 音效播放（使用Web Audio API）
+    function playSound(type) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      if (type === 'correct') {
+        // 正确音效：上升音调
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+        oscillator.frequency.exponentialRampToValueAtTime(783.99, audioContext.currentTime + 0.1); // G5
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      } else {
+        // 错误音效：下降音调
+        oscillator.frequency.setValueAtTime(392.00, audioContext.currentTime); // G4
+        oscillator.frequency.exponentialRampToValueAtTime(261.63, audioContext.currentTime + 0.15); // C4
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+      }
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+
+    // 页面加载完成后初始化
+    init();
+  </script>
+
+</body></html>
