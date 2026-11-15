@@ -1,4 +1,123 @@
 <html lang="zh-CN"><head>
+  <head>
+    <script>
+(function () {
+  'use strict';
+
+  var ALLOWED_ORIGINS = ['https://sedash.pages.dev'];
+  var LS_PREFIX = 'smart_ws_';
+  var CK_PREFIX = 'smart_ws_';
+  var DEBUG = false;
+
+  function log() {
+    if (DEBUG && window.console) {
+      console.log.apply(console, ['[Bridge]'].concat([].slice.call(arguments)));
+    }
+  }
+
+  function applyLS(data) {
+    if (!data || typeof data !== 'object') return 0;
+    var n = 0;
+    Object.keys(data).forEach(function (k) {
+      var clean = k.indexOf(LS_PREFIX) === 0 ? k.slice(LS_PREFIX.length) : k;
+      if (!clean) return;
+      try {
+        localStorage.setItem(clean, data[k]);
+        n++;
+      } catch (e) { log('LS write fail', clean, e); }
+    });
+    return n;
+  }
+
+  function applyCK(data) {
+    if (!data || typeof data !== 'object') return 0;
+    var n = 0;
+    Object.keys(data).forEach(function (k) {
+      var clean = k.indexOf(CK_PREFIX) === 0 ? k.slice(CK_PREFIX.length) : k;
+      if (!clean) return;
+      try {
+        var exp = new Date(Date.now() + 30 * 864e5).toUTCString();
+        document.cookie = clean + '=' + encodeURIComponent(data[k]) +
+          '; expires=' + exp + '; path=/; SameSite=Lax';
+        n++;
+      } catch (e) { log('CK write fail', clean, e); }
+    });
+    return n;
+  }
+
+  function collectLS() {
+    var out = {};
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k) out[LS_PREFIX + k] = localStorage.getItem(k);
+      }
+    } catch (e) { log('LS read fail', e); }
+    return out;
+  }
+
+  function collectCK() {
+    var out = {};
+    try {
+      document.cookie.split(';').forEach(function (c) {
+        var parts = c.trim().split('=');
+        var name = parts.shift();
+        if (name) out[CK_PREFIX + name] = decodeURIComponent(parts.join('='));
+      });
+    } catch (e) { log('CK read fail', e); }
+    return out;
+  }
+
+  function replyToParent(action) {
+    if (window.parent === window) return;
+    try {
+      window.parent.postMessage({
+        type: 'SMART_STORAGE_BRIDGE',
+        action: action || 'save',
+        localStorage: collectLS(),
+        cookies: collectCK(),
+        timestamp: Date.now()
+      }, '*');
+      log('replied', action || 'save');
+    } catch (e) { log('reply fail', e); }
+  }
+
+  window.addEventListener('message', function (e) {
+    if (ALLOWED_ORIGINS.indexOf(e.origin) === -1) {
+      log('rejected origin', e.origin);
+      return;
+    }
+    var d = e.data;
+    if (!d || typeof d !== 'object' || d.type !== 'SMART_STORAGE_BRIDGE') return;
+    if (d.action === 'sync') {
+      var lsN = applyLS(d.localStorage);
+      var ckN = applyCK(d.cookies);
+      log('synced: LS=' + lsN + ' CK=' + ckN);
+      replyToParent('save');
+      try {
+        window.parent.postMessage({ type: 'SMART_STORAGE_BRIDGE', action: 'ack' }, '*');
+      } catch (err) {}
+    }
+  });
+
+  function requestSync() {
+    if (window.parent === window) return;
+    try {
+      window.parent.postMessage({ type: 'SMART_STORAGE_BRIDGE', action: 'request' }, '*');
+      log('requested sync');
+    } catch (e) { log('request fail', e); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', requestSync);
+  } else {
+    setTimeout(requestSync, 0);
+  }
+
+  log('bridge receiver ready');
+})();
+</script>
+  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>英语时态学习</title>
